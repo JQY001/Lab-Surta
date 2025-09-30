@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Berita Kemah Geospasial | Lab Surta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f8f9fa;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      background-color: #ff6600;
+      color: #fff;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      height: 70px;
+    }
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 1001; /* Pastikan logo di atas menu saat terbuka */
+    }
+    header .logo img {
+      width: 48px;
+      height: 48px;
+      border-radius: 6px;
+      object-fit: contain;
+    }
+    header .text-logo {
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+    header .text-logo h1 {
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 1.1;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    header .text-logo span {
+      font-weight: 400;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* HAMBURGER MENU ICON - Hanya tampil di mobile */
+    .hamburger {
+      display: none; /* Sembunyikan secara default */
+      flex-direction: column;
+      justify-content: space-around;
+      width: 30px;
+      height: 25px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      z-index: 1001; /* Pastikan ikon di atas menu saat terbuka */
+    }
+
+    .hamburger span {
+      width: 100%;
+      height: 3px;
+      background-color: #fff;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      transform-origin: center;
+    }
+
+    /* NAVIGASI - Default state (Desktop) */
+    nav {
+      display: block;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 28px;
+    }
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      position: relative;
+      padding-bottom: 4px;
+      transition: color 0.3s ease;
+      user-select: none;
+    }
+    nav ul li a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: #fff;
+      transition: width 0.3s ease;
+    }
+    nav ul li a:hover {
+      color: #222;
+    }
+    nav ul li a:hover::after {
+      width: 100%;
+    }
+    nav ul li a[aria-current="page"] {
+      font-weight: 700;
+      border-bottom: 2px solid #fff;
+    }
+
+    /* MAIN - News Section */
+    main {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+      flex-grow: 1;
+    }
+
+    .news-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 30px 0;
+      background: linear-gradient(135deg, #ff6600, #ff8c00);
+      border-radius: 15px;
+      color: white;
+    }
+
+    .news-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .news-header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* News Grid */
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+
+    /* --- PERUBAHAN DI SINI --- */
+    .news-card-link { /* Wrapper link untuk setiap kartu berita */
+      text-decoration: none; /* Hapus garis bawah default */
+      color: inherit; /* Warisi warna teks dari parent */
+      display: block; /* Agar link mengisi seluruh area kartu */
+    }
+
+    .news-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      height: 100%; /* Pastikan kartu mengisi tinggi penuh di grid */
+      display: flex; /* Gunakan flexbox untuk konten di dalam kartu */
+      flex-direction: column; /* Susun konten secara vertikal */
+    }
+    /* --- AKHIR PERUBAHAN --- */
+
+    .news-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .news-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .news-content {
+      padding: 25px;
+      flex-grow: 1; /* Agar konten mengisi sisa ruang vertikal */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .news-date {
+      color: #ff6600;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .news-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #ff6600;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .news-excerpt {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      flex-grow: 1; /* Agar excerpt mengisi ruang dan mendorong kategori ke bawah */
+      text-align: justify; /* Justify teks excerpt */
+    }
+
+    .news-category {
+      display: inline-block;
+      background: #fff3e6;
+      color: #ff6600;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      align-self: flex-start; /* Agar kategori tidak memenuhi lebar penuh */
+    }
+
+    /* Featured News */
+    .featured-news {
+      margin-bottom: 50px;
+    }
+
+    /* --- PERUBAHAN DI SINI --- */
+    .featured-card-link { /* Wrapper link untuk featured card */
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .featured-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease; /* Tambahkan transisi */
+      cursor: pointer; /* Tambahkan kursor pointer */
+    }
+    .featured-card:hover { /* Tambahkan efek hover */
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    /* --- AKHIR PERUBAHAN --- */
+
+    .featured-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+
+    .featured-content {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .featured-badge {
+      background: #ff6600;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+
+    .featured-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ff6600;
+      margin-bottom: 20px;
+      line-height: 1.3;
+    }
+
+    .featured-excerpt {
+      color: #666;
+      line-height: 1.7;
+      margin-bottom: 25px;
+      font-size: 1.1rem;
+      text-align: justify; /* Justify teks excerpt */
+    }
+
+    .read-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #ff6600;
+      font-weight: 600;
+      text-decoration: none;
+      transition: gap 0.3s ease;
+    }
+
+    .read-more:hover {
+      gap: 12px;
+    }
+
+    /* FOOTER */
+    footer {
+      background-color: #ff6600;
+      color: #333;
+      text-align: center;
+      font-size: 13px;
+      padding: 18px 20px;
+      flex-shrink: 0;
+      height: 60px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+    }
+
+    /* Responsive - HAMBURGER MENU */
+    @media (max-width: 768px) {
+      header {
+        padding: 15px 20px;
+      }
+
+      /* Tampilkan hamburger menu */
+      .hamburger {
+        display: flex;
+      }
+
+      /* Sembunyikan navigasi default */
+      nav {
+        position: fixed;
+        top: 70px; /* Tinggi header */
+        left: 0;
+        width: 100%;
+        height: 0; /* Awalnya tersembunyi */
+        background-color: #ff6600;
+        overflow: hidden;
+        transition: height 0.4s ease;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        z-index: 999; /* Di bawah logo dan hamburger */
+      }
+
+      /* Tampilkan navigasi saat menu aktif */
+      nav.active {
+        height: calc(100vh - 70px); /* Set tinggi penuh layar dikurangi header */
+      }
+
+      nav ul {
+        flex-direction: column;
+        gap: 0;
+        padding: 20px;
+        opacity: 0; /* Sembunyikan item menu saat transisi tinggi */
+        transition: opacity 0.3s ease 0.1s; /* Animasi opacity setelah tinggi berubah */
+      }
+
+      nav.active ul {
+        opacity: 1; /* Tampilkan item menu saat aktif */
+      }
+
+      nav ul li {
+        width: 100%;
+      }
+
+      nav ul li a {
+        display: block;
+        padding: 16px 0;
+        font-size: 18px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        width: 100%;
+      }
+
+      nav ul li:last-child a {
+        border-bottom: none;
+      }
+
+      nav ul li a::after {
+        display: none; /* Sembunyikan efek garis bawah di mobile */
+      }
+
+      /* Animasi hamburger menjadi X */
+      .hamburger.active span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+      }
+
+      .hamburger.active span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .hamburger.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -6px);
+      }
+
+      .news-header h1 {
+        font-size: 2rem;
+      }
+      
+      .news-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .featured-card {
+        grid-template-columns: 1fr;
+      }
+      
+      .featured-title {
+        font-size: 1.6rem;
+      }
+    }
+
+    /* Loading Animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .news-card-link, .featured-card-link { /* Terapkan animasi ke link wrapper */
+      animation: fadeInUp 0.6s ease;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="IMG/logoitenas.png" alt="Logo Lab Surta" />
+      <div class="text-logo">
+        <h1>Laboratorium Surta</h1>
+        <span>Teknik Geodesi</span>
+      </div>
+    </div>
+
+    <!-- Hamburger Menu Button -->
+    <button class="hamburger" id="hamburgerMenu" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav id="mainNav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="pratikum.html">Praktikum</a></li>
+        <li><a href="alat.html">Alat</a></li>
+        <li><a href="daftarasisten.html">Daftar Asisten</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="news-header">
+      <h1></i> Berita Terkini</h1>
+      <p>Ikuti perkembangan terbaru kegiatan Laboratorium Surta</p>
+    </div>
+
+    <!-- Featured News -->
+    <div class="featured-news">
+      <!-- --- PERUBAHAN DI SINI --- -->
+      <a href="kolabindosutra.html" class="featured-card-link">
+        <div class="featured-card">
+          <img src="IMG/kolab.jpg" alt="Kegiatan utama Kemah Geospasial 2025 dengan peserta melakukan pengukuran menggunakan alat canggih" class="featured-image" />
+          <div class="featured-content">
+            <span class="featured-badge">FEATURED</span>
+            <h2 class="featured-title">Kolaborasi Baru FTSP Itenas di Bidang Geospasial</h2>
+            <p class="featured-excerpt">
+             Fakultas Teknik Sipil dan Perencanaan (FTSP) Itenas resmi menandatangani Memorandum of Agreement (MoA) dengan PT Alat Ukur Indosurta pada 10 September 2025.
+            </p>
+            <span class="read-more">
+              Baca selengkapnya <i class="fas fa-arrow-right"></i>
+            </span>
+          </div>
+        </div>
+      </a>
+      <!-- --- AKHIR PERUBAHAN --- -->
+    </div>
+
+    <!-- News Grid -->
+    <div class="news-grid">
+      <!-- News 1 -->
+      <!-- --- PERUBAHAN DI SINI --- -->
+      <a href="pengumumanasdosgenap2025.html" class="news-card-link">
+        <div class="news-card">
+          <img src="IMG/logopengumuman.png" alt="Sesi pelatihan penggunaan GPS canggih untuk pemetaan digital dengan peserta aktif" class="news-image" />
+          <div class="news-content">
+            <div class="news-date"><i class="far fa-calendar"></i> 15 Desember 2024</div>
+            <h3 class="news-title">Pengumuman Asisten Praktikum Lab Surta Semester Genap 2025</h3>
+            <p class="news-excerpt">Dengan hormat, Laboratorium Surta Teknik Geodesi dengan bangga mengumumkan daftar nama mahasiswa yang telah terpilih sebagai Asisten Praktikum untuk Semester Genap Tahun Akademik 2024/2025.</p>
+            <span class="news-category">Pengumuman</span>
+          </div>
+        </div>
+      </a>
+      <!-- --- AKHIR PERUBAHAN --- -->
+
+      <!-- News 2 -->
+      <a href="kolabindosutra.html" class="news-card-link">
+        <div class="news-card">
+          <img src="IMG/kolab.jpg" alt="Presentasi hasil penelitian geospasial oleh mahasiswa dengan tampilan data visual" class="news-image" />
+          <div class="news-content">
+            <div class="news-date"><i class="far fa-calendar"></i> 10 Desember 2024</div>
+            <h3 class="news-title">Kolaborasi Baru FTSP Itenas di Bidang Geospasial</h3>
+            <p class="news-excerpt">Fakultas Teknik Sipil dan Perencanaan (FTSP) Itenas resmi menandatangani Memorandum of Agreement (MoA) dengan PT Alat Ukur Indosurta pada 10 September 2025.</p>
+            <span class="news-category">kolaborasi</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- News 3 -->
+      <a href="kemhageospasial2025.html" class="news-card-link">
+        <div class="news-card">
+          <img src="IMG/25kemker.png" alt="Kunjungan industri ke perusahaan survey dan pemetaan dengan diskusi teknologi terbaru" class="news-image" />
+          <div class="news-content">
+            <div class="news-date"><i class="far fa-calendar"></i> 5 Desember 2024</div>
+            <h3 class="news-title">Kemah Geospasial 2025</h3>
+            <p class="news-excerpt">Teknik Geodesi Itenas Kembali menggelar Kemah Gospasial di Desa Cipada, Kabupaten Bandung Barat, Selama 10 hari penuh, mahasiswa tinggalm berinteraksi, dan bersosialisasi langsung dengan masyarakat desa. Mereka turun langsung untuk mengaplikasikan ilmu lapangan</p>
+            <span class="news-category">Kegiatan</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 Lab Surta - Teknik Geodesi</p>
+  </footer>
+
+  <script>
+    // Simple animation for news cards
+    document.addEventListener('DOMContentLoaded', function() {
+      const newsCardLinks = document.querySelectorAll('.news-card-link'); // Target link wrapper
+      const featuredCardLink = document.querySelector('.featured-card-link'); // Target link wrapper
+      
+      // Add delay for staggered animation
+      newsCardLinks.forEach((link, index) => {
+        link.style.animationDelay = `${index * 0.1}s`;
+      });
+      
+      if (featuredCardLink) {
+        featuredCardLink.style.animationDelay = '0.2s';
+      }
+    });
+
+    // HAMBURGER MENU FUNCTIONALITY
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    const mainNav = document.getElementById('mainNav');
+
+    hamburgerMenu.addEventListener('click', function() {
+      // Toggle class active pada hamburger dan nav
+      this.classList.toggle('active');
+      mainNav.classList.toggle('active');
+      
+      // Mencegah scroll body saat menu terbuka
+      document.body.style.overflow = mainNav.classList.contains('active') ? 'hidden' : '';
+    });
+
+    // Tutup menu saat klik di luar menu
+    document.addEventListener('click', function(event) {
+      const isClickInsideNav = mainNav.contains(event.target);
+      const isClickOnHamburger = hamburgerMenu.contains(event.target);
+      
+      if (!isClickInsideNav && !isClickOnHamburger && mainNav.classList.contains('active')) {
+        hamburgerMenu.classList.remove('active');
+        mainNav.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // Tutup menu saat link di dalam menu diklik (untuk navigasi single page)
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        // Hanya tutup jika menu sedang aktif
+        if (mainNav.classList.contains('active')) {
+          hamburgerMenu.classList.remove('active');
+          mainNav.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+
+    // Tutup menu saat ukuran layar berubah menjadi desktop
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        hamburgerMenu.classList.remove('active');
+        mainNav.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  </script>
+</body>
+</html>
