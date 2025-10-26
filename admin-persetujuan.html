@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Persetujuan Peminjaman Alat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f8f9fa;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      background-color: #ff6600;
+      color: #fff;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      height: 70px;
+    }
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 1001;
+    }
+    header .logo img {
+      width: 48px;
+      height: 48px;
+      border-radius: 6px;
+      object-fit: contain;
+    }
+    header .text-logo h1 {
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 1.1;
+      color: #fff;
+      margin: 0;
+    }
+    header .text-logo span {
+      font-weight: 400;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.85);
+      margin: 0;
+    }
+    .logout-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 1px solid white;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-1px);
+    }
+
+    /* MAIN */
+    main {
+      max-width: 1200px;
+      margin: 40px auto 60px;
+      padding: 0 20px;
+      flex-grow: 1;
+      width: 100%;
+    }
+    h2.section-title {
+      color: #ff6600;
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 24px;
+      border-left: 8px solid #ff6600;
+      padding-left: 12px;
+      text-transform: uppercase;
+    }
+
+    /* Info Jadwal Hari Ini */
+    .schedule-info {
+      margin: 15px 0;
+      padding: 15px;
+      background: #fff3e6;
+      border-radius: 8px;
+      border-left: 4px solid #ff6600;
+    }
+    .schedule-info strong {
+      color: #cc5200;
+    }
+
+    /* Section Hapus Data */
+    .hapus-section {
+      margin: 20px 0;
+      padding: 20px;
+      background: #fff3e6;
+      border-radius: 12px;
+      border: 2px solid #ff6600;
+      box-shadow: 0 4px 12px rgba(255, 102, 0, 0.1);
+    }
+    .hapus-section h4 {
+      color: #cc5200;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hapus-section h4::before {
+      content: "";
+    }
+    .btn-hapus {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 5px;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn-hapus:hover {
+      background-color: #c82333;
+      transform: translateY(-2px);
+    }
+    .btn-hapus.auto {
+      background-color: #ff6600;
+    }
+    .btn-hapus.auto:hover {
+      background-color: #cc5200;
+    }
+    .info-storage {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      border-left: 4px solid #ff6600;
+    }
+    .storage-warning {
+      color: #dc3545;
+      font-weight: 600;
+    }
+    .storage-normal {
+      color: #28a745;
+      font-weight: 600;
+    }
+
+    /* Status untuk toggle */
+    .status-aktif {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: 600;
+    }
+
+    .status-nonaktif {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: 600;
+    }
+
+    /* Filter dan Pencarian */
+    .filter-section {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(255, 102, 0, 0.1);
+    }
+    .filter-section select, .filter-section input {
+      padding: 10px 14px;
+      border: 2px solid #ff6600;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      min-width: 200px;
+    }
+    .filter-section button {
+      background-color: #ff6600;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+    .filter-section button:hover {
+      background-color: #cc5200;
+      transform: translateY(-2px);
+    }
+
+    /* Tabel Peminjaman */
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(255, 102, 0, 0.15);
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+    th, td {
+      border: 1px solid #ff6600;
+      padding: 12px 15px;
+      text-align: left;
+    }
+    th {
+      background-color: #fff3e6;
+      color: #cc5200;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    tr:nth-child(even) {
+      background-color: #fffaf5;
+    }
+    tr:hover {
+      background-color: #fff0e6;
+    }
+    .status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      text-align: center;
+      display: inline-block;
+      font-size: 0.85rem;
+    }
+    .status-menunggu {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    .status-disetujui {
+      background-color: #d1edff;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    .status-ditolak {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .status-selesai {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .btn-action {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 2px;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+    }
+    .btn-setuju {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn-setuju:hover {
+      background-color: #218838;
+    }
+    .btn-tolak {
+      background-color: #dc3545;
+      color: white;
+    }
+    .btn-tolak:hover {
+      background-color: #c82333;
+    }
+    .btn-detail {
+      background-color: #ffc107;
+      color: #212529;
+    }
+    .btn-detail:hover {
+      background-color: #e0a800;
+    }
+    .btn-dikembalikan {
+      background-color: #17a2b8;
+      color: white;
+    }
+    .btn-dikembalikan:hover {
+      background-color: #138496;
+    }
+    .btn-print {
+      background-color: #6f42c1;
+      color: white;
+    }
+    .btn-print:hover {
+      background-color: #5a2d9c;
+    }
+    .btn-hapus-satu {
+      background-color: #6c757d;
+      color: white;
+      margin-top: 4px;
+    }
+    .btn-hapus-satu:hover {
+      background-color: #5a6268;
+    }
+
+    /* Modal Detail */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ff6600;
+      padding-bottom: 15px;
+    }
+    .modal-title {
+      color: #ff6600;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      padding: 5px;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .close-modal:hover {
+      background-color: #f8f9fa;
+    }
+    .detail-row {
+      display: flex;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+    }
+    .detail-label {
+      font-weight: 600;
+      width: 200px;
+      color: #ff6600;
+      flex-shrink: 0;
+    }
+    .detail-value {
+      flex: 1;
+    }
+    .alat-list {
+      margin-top: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .alat-list table {
+      margin: 0;
+      box-shadow: none;
+    }
+    .alat-list th {
+      background-color: #e9ecef;
+      color: #495057;
+      font-weight: 600;
+    }
+    .alat-list th, .alat-list td {
+      border: 1px solid #dee2e6;
+      padding: 10px;
+    }
+
+    /* Tombol Aksi di Modal */
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .modal-actions button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Style untuk Popup Pilih Asisten */
+    .form-select, .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #ff6600;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .form-select:focus, .form-input:focus {
+      outline: none;
+      border-color: #cc5200;
+      box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn-cancel {
+      padding: 10px 20px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+      background: #5a6268;
+      transform: translateY(-1px);
+    }
+
+    .btn-confirm {
+      padding: 10px 20px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-confirm:hover {
+      background: #218838;
+      transform: translateY(-1px);
+    }
+
+    /* Notifikasi */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      z-index: 2000;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .notification.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .notification.success {
+      background-color: #28a745;
+    }
+    .notification.error {
+      background-color: #dc3545;
+    }
+    .notification.warning {
+      background-color: #ffc107;
+      color: #212529;
+    }
+
+    /* FOOTER */
+    footer {
+      background-color: #ff6600;
+      color: #333;
+      text-align: center;
+      font-size: 13px;
+      padding: 18px 20px;
+      flex-shrink: 0;
+      height: 60px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header {
+        padding: 15px 20px;
+      }
+      
+      .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .filter-section > * {
+        width: 100%;
+      }
+      .hapus-section > div {
+        display: flex;
+        flex-direction: column;
+      }
+      .btn-hapus {
+        margin: 5px 0;
+      }
+      .detail-row {
+        flex-direction: column;
+      }
+      .detail-label {
+        width: 100%;
+        margin-bottom: 5px;
+      }
+      table {
+        font-size: 0.9rem;
+      }
+      th, td {
+        padding: 8px 10px;
+      }
+      .modal-content {
+        padding: 20px;
+        margin: 20px;
+      }
+      .btn-action {
+        display: block;
+        width: 100%;
+        margin: 2px 0;
+      }
+      .modal-actions {
+        flex-direction: column;
+      }
+      .modal-actions button {
+        width: 100%;
+      }
+    }
+
+    /* Loading State */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #ff6600;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Style untuk PDF */
+    .pdf-section {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Notifikasi -->
+  <div id="notification" class="notification"></div>
+
+  <header>
+    <div class="logo">
+      <img src="IMG/logoitenas.png" alt="Logo Lab Surta" />
+      <div class="text-logo">
+        <h1>Laboratorium Survei dan Pemetaan</h1>
+        <span>Teknik Geodesi - Admin</span>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <span style="color: white; font-size: 14px;" id="adminWelcome">Administrator</span>
+      <button class="logout-btn" onclick="adminLogout()">
+         Logout
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <h2 class="section-title">Persetujuan Peminjaman Alat</h2>
+
+    <!-- Info Jadwal Hari Ini -->
+    <div class="schedule-info" id="scheduleInfo">
+      <!-- Info jadwal akan diisi JavaScript -->
+    </div>
+
+    <!-- Section Toggle Pendaftaran Asisten -->
+    <div class="hapus-section">
+      <h4>🔄 Toggle Pendaftaran Asisten</h4>
+      <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
+        <span style="font-weight: 600;">Status Pendaftaran:</span>
+        <span id="statusDaftarAsisten" class="status-nonaktif">NONAKTIF</span>
+      </div>
+      <div>
+        <button class="btn-hapus auto" id="btnAktifkanDaftar">
+          ✅ Aktifkan Pendaftaran
+        </button>
+        <button class="btn-hapus" id="btnNonaktifkanDaftar" style="background-color: #6c757d;">
+          ❌ Nonaktifkan Pendaftaran
+        </button>
+      </div>
+      <div class="info-storage">
+        <strong>ℹ️ Info:</strong> Saat nonaktif, halaman daftar asisten akan menampilkan "Coming Soon"
+      </div>
+    </div>
+
+    <!-- Section Hapus Data -->
+    <div class="hapus-section">
+      <h4>🗃️ Manajemen Penyimpanan Data</h4>
+      <div id="infoStorage" class="info-storage">
+        <!-- Info penggunaan storage akan diisi JavaScript -->
+      </div>
+      <div>
+        <button class="btn-hapus auto" id="btnHapusOtomatis">
+          Hapus 50% Data Tertua Otomatis
+        </button>
+        <button class="btn-hapus" id="btnHapusSelesai">
+          Hapus Data yang Sudah Selesai
+        </button>
+        <button class="btn-hapus" id="btnHapusDitolak">
+          Hapus Data yang Ditolak
+        </button>
+        <button class="btn-hapus" id="btnHapusSemua" style="background-color: #6c757d;">
+          Hapus Semua Data
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter dan Pencarian -->
+    <div class="filter-section">
+      <select id="filterStatus">
+        <option value="semua">Semua Status</option>
+        <option value="Menunggu">Menunggu Persetujuan</option>
+        <option value="Disetujui">Disetujui</option>
+        <option value="Ditolak">Ditolak</option>
+        <option value="Selesai">Selesai</option>
+      </select>
+      <input type="text" id="searchInput" placeholder="Cari berdasarkan nama atau NRP...">
+      <button id="btnRefresh">
+        🔄 Refresh Data
+      </button>
+    </div>
+
+    <div class="table-container">
+      <table id="tabelPeminjaman">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Peminjam</th>
+            <th>NRP</th>
+            <th>Tanggal Pinjam</th>
+            <th>Tanggal Kembali</th>
+            <th>Jumlah Alat</th>
+            <th>Status</th>
+            <th width="220">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyPeminjaman">
+          <!-- Data akan diisi oleh JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Info Data Kosong -->
+    <div id="emptyState" style="display: none; text-align: center; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(255,102,0,0.1);">
+      <div style="font-size: 4rem; margin-bottom: 20px;">📭</div>
+      <h3 style="color: #ff6600; margin-bottom: 10px;">Belum Ada Data Peminjaman</h3>
+      <p style="color: #666; margin-bottom: 20px;">Tidak ada data peminjaman yang ditemukan. Data akan muncul ketika ada pengajuan peminjaman baru.</p>
+      <button onclick="location.reload()" style="background-color: #ff6600; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+        Refresh Halaman
+      </button>
+    </div>
+  </main>
+
+  <!-- Modal Detail Peminjaman -->
+  <div id="modalDetail" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Detail Peminjaman</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div id="modalBody">
+        <!-- Detail akan diisi oleh JavaScript -->
+      </div>
+      <div class="modal-actions">
+        <button class="btn-print" id="btnExportPDF" style="padding: 10px 20px; background-color: #dc3545;">
+          📄 Export PDF
+        </button>
+        <button class="btn-print" id="btnExportExcel" style="padding: 10px 20px; background-color: #28a745;">
+          📊 Export Excel
+        </button>
+        <button class="btn-hapus" onclick="hapusSatuDataFromModal()" style="padding: 10px 20px;">
+          🗑️ Hapus Data Ini
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container untuk PDF -->
+  <div id="pdfContainer" class="pdf-section">
+    <div class="pdf-container" id="pdfContent">
+      <!-- Konten PDF akan diisi oleh JavaScript -->
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Laboratorium Survei dan Pemetaan - Teknik Geodesi</p>
+  </footer>
+
+  <script>
+    // ========== JADWAL ASISTEN PER HARI ==========
+    const JADWAL_ASISTEN = {
+        'senin': [
+            'Muhamad Luthfi Ramdani', 
+            'Muhammad Ridho Madjid'
+        ],
+        'selasa': [
+            'Dedi Wijaya',
+            'Noval Favian Bima Putra'
+        ],
+        'rabu': [
+            'Muamarul Fathir', 
+            'Aulia Putri Maharani'
+        ],
+        'kamis': [
+            'Mawaritsa Etufirka',
+            'Zyfa Julianne Alifa'
+        ],
+        'jumat': [
+            'Mochamad Rizki M.P',
+            'Tantry Sabina Khoirunnisa'
+        ],
+        'sabtu': [
+            'Libur'
+        ],
+        'minggu': [
+            'Libur'
+        ]
+    };
+
+    // Fungsi untuk mendapatkan hari dalam bahasa Indonesia
+    function getHariInIndonesia() {
+        const hariInggris = new Date().getDay();
+        const hariMap = {
+            0: 'minggu',
+            1: 'senin', 
+            2: 'selasa',
+            3: 'rabu',
+            4: 'kamis',
+            5: 'jumat',
+            6: 'sabtu'
+        };
+        return hariMap[hariInggris];
+    }
+
+    // Fungsi untuk mendapatkan daftar asisten hari ini
+    function getAsistenHariIni() {
+        const hariIni = getHariInIndonesia();
+        return JADWAL_ASISTEN[hariIni] || ['Asisten Tidak Tersedia'];
+    }
+
+    // ========== CEK STATUS LOGIN DAN ROLE ==========
+    function checkAdminLogin() {
+        const isLoggedIn = localStorage.getItem('adminLoggedIn');
+        const loginTime = localStorage.getItem('loginTime');
+        const userRole = localStorage.getItem('userRole');
+        
+        // Jika bukan admin atau belum login atau login lebih dari 8 jam
+        if (userRole !== 'admin' || !isLoggedIn || !loginTime || (Date.now() - parseInt(loginTime)) > 8 * 60 * 60 * 1000) {
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('loginTime');
+            localStorage.removeItem('userRole');
+            window.location.href = 'login.html';
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Cek login saat halaman dimuat
+    if (!checkAdminLogin()) {
+        // Redirect ke login page
+        window.location.href = 'login.html';
+    }
+
+    // Auto logout setelah 8 jam
+    setTimeout(() => {
+        localStorage.removeItem('adminLoggedIn');
+        localStorage.removeItem('loginTime');
+        localStorage.removeItem('userRole');
+        alert('Sesi telah berakhir. Silakan login kembali.');
+        window.location.href = 'login.html';
+    }, 8 * 60 * 60 * 1000); // 8 jam
+
+    // Logout function
+    function adminLogout() {
+        localStorage.removeItem('adminLoggedIn');
+        localStorage.removeItem('loginTime');
+        localStorage.removeItem('userRole');
+        window.location.href = 'login.html';
+    }
+
+    // ========== ELEMEN DOM ==========
+    const tbodyPeminjaman = document.getElementById('tbodyPeminjaman');
+    const filterStatus = document.getElementById('filterStatus');
+    const searchInput = document.getElementById('searchInput');
+    const btnRefresh = document.getElementById('btnRefresh');
+    const modalDetail = document.getElementById('modalDetail');
+    const modalBody = document.getElementById('modalBody');
+    const closeModal = document.querySelector('.close-modal');
+    const emptyState = document.getElementById('emptyState');
+    const notification = document.getElementById('notification');
+    const btnExportPDF = document.getElementById('btnExportPDF');
+    const btnExportExcel = document.getElementById('btnExportExcel');
+    const scheduleInfo = document.getElementById('scheduleInfo');
+
+    // Tombol hapus
+    const btnHapusOtomatis = document.getElementById('btnHapusOtomatis');
+    const btnHapusSelesai = document.getElementById('btnHapusSelesai');
+    const btnHapusDitolak = document.getElementById('btnHapusDitolak');
+    const btnHapusSemua = document.getElementById('btnHapusSemua');
+    const infoStorage = document.getElementById('infoStorage');
+
+    // Tombol toggle pendaftaran asisten
+    const btnAktifkanDaftar = document.getElementById('btnAktifkanDaftar');
+    const btnNonaktifkanDaftar = document.getElementById('btnNonaktifkanDaftar');
+    const statusDaftarAsisten = document.getElementById('statusDaftarAsisten');
+
+    // Variabel global untuk data yang sedang dilihat
+    let currentModalData = null;
+
+    // ========== TOGGLE PENDAFTARAN ASISTEN ==========
+    function updateStatusDaftarAsisten() {
+        const status = localStorage.getItem('daftarAsistenAktif');
+        const isActive = status === 'true';
+        
+        if (isActive) {
+            statusDaftarAsisten.textContent = 'AKTIF';
+            statusDaftarAsisten.className = 'status-aktif';
+        } else {
+            statusDaftarAsisten.textContent = 'NONAKTIF';
+            statusDaftarAsisten.className = 'status-nonaktif';
+        }
+    }
+
+    function aktifkanDaftarAsisten() {
+        localStorage.setItem('daftarAsistenAktif', 'true');
+        updateStatusDaftarAsisten();
+        showNotification('✅ Pendaftaran asisten diaktifkan! Form sekarang dapat diakses.', 'success');
+    }
+
+    function nonaktifkanDaftarAsisten() {
+        localStorage.setItem('daftarAsistenAktif', 'false');
+        updateStatusDaftarAsisten();
+        showNotification('❌ Pendaftaran asisten dinonaktifkan! Halaman akan menampilkan "Coming Soon".', 'warning');
+    }
+
+    // ========== FUNGSI UTILITAS ==========
+    function showNotification(message, type = 'success') {
+      notification.textContent = message;
+      notification.className = `notification ${type} show`;
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 4000);
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+
+    function formatDateLong(dateString) {
+      if (!dateString) return '-';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+
+    // Fungsi untuk membuat nama file yang aman
+    function createSafeFileName(nama, nrp) {
+      const cleanName = nama ? nama.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') : 'unknown';
+      const cleanNrp = nrp ? nrp.replace(/[^a-zA-Z0-9]/g, '') : 'unknown';
+      return `${cleanName}_${cleanNrp}`;
+    }
+
+    // ========== FUNGSI POPUP PILIH ASISTEN ==========
+    function showAsistenPopup(id, action) {
+        const asistenHariIni = getAsistenHariIni();
+        const hariIni = getHariInIndonesia();
+        
+        // Buat opsi asisten berdasarkan hari ini
+        let optionsHTML = '<option value="">-- Pilih Asisten --</option>';
+        
+        asistenHariIni.forEach(asisten => {
+            optionsHTML += `<option value="${asisten}">${asisten}</option>`;
+        });
+        
+        // Tambahkan opsi "lainnya" untuk fleksibilitas
+        optionsHTML += '<option value="lainnya">-- Asisten Lain --</option>';
+
+        // Buat modal popup untuk memilih asisten
+        const popupHTML = `
+            <div id="asistenPopup" class="modal" style="display: flex;">
+                <div class="modal-content" style="max-width: 450px;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Pilih Asisten Penanggung Jawab</h3>
+                        <button class="close-modal" onclick="closeAsistenPopup()">&times;</button>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div style="background: #e8f5e8; padding: 10px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #28a745;">
+                            <strong>📅 Jadwal Hari Ini (${hariIni.toUpperCase()})</strong>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="selectAsisten">Pilih Asisten:</label>
+                            <select id="selectAsisten" class="form-select">
+                                ${optionsHTML}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="inputAsistenLainContainer" style="display: none;">
+                            <label for="inputAsistenLain">Ketik nama asisten:</label>
+                            <input type="text" id="inputAsistenLain" placeholder="Masukkan nama asisten..." class="form-input">
+                        </div>
+                        
+                        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                            <button onclick="closeAsistenPopup()" class="btn-cancel">Batal</button>
+                            <button onclick="processApprovalWithAsisten('${id}', '${action}')" class="btn-confirm">
+                                ${action === 'setuju' ? '✅ Setujui' : '❌ Tolak'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Tambahkan popup ke body
+        document.body.insertAdjacentHTML('beforeend', popupHTML);
+        
+        // Event listener untuk select asisten
+        document.getElementById('selectAsisten').addEventListener('change', function() {
+            const container = document.getElementById('inputAsistenLainContainer');
+            if (this.value === 'lainnya') {
+                container.style.display = 'block';
+                document.getElementById('inputAsistenLain').focus();
+            } else {
+                container.style.display = 'none';
+                document.getElementById('inputAsistenLain').value = '';
+            }
+        });
+    }
+
+    function closeAsistenPopup() {
+        const popup = document.getElementById('asistenPopup');
+        if (popup) {
+            popup.remove();
+        }
+    }
+
+    function processApprovalWithAsisten(id, action) {
+        const selectAsisten = document.getElementById('selectAsisten');
+        const inputAsistenLain = document.getElementById('inputAsistenLain');
+        
+        let namaAsisten = selectAsisten.value;
+        
+        // Jika memilih "lainnya" dan ada input manual
+        if (namaAsisten === 'lainnya') {
+            namaAsisten = inputAsistenLain.value.trim();
+        }
+        
+        // Validasi
+        if (!namaAsisten) {
+            showNotification('Harap pilih atau ketik nama asisten!', 'error');
+            return;
+        }
+        
+        // Tutup popup
+        closeAsistenPopup();
+        
+        // Proses persetujuan/penolakan
+        if (action === 'setuju') {
+            if (confirm(`Setujui peminjaman ini dengan penanggung jawab: ${namaAsisten}?`)) {
+                updateStatusWithAsisten(id, 'Disetujui', namaAsisten);
+            }
+        } else if (action === 'tolak') {
+            if (confirm(`Tolak peminjaman ini dengan penanggung jawab: ${namaAsisten}?`)) {
+                updateStatusWithAsisten(id, 'Ditolak', namaAsisten);
+            }
+        }
+    }
+
+    function updateStatusWithAsisten(id, status, asisten) {
+        const data = JSON.parse(localStorage.getItem(id) || '{}');
+        data.s = status;
+        data.asisten = asisten; // Simpan nama asisten yang menangani
+        data.tanggalPersetujuan = new Date().toISOString().split('T')[0];
+        localStorage.setItem(id, JSON.stringify(data));
+        loadPeminjamanData();
+        
+        const statusText = {
+            'Menunggu': 'Menunggu Persetujuan',
+            'Disetujui': 'Disetujui', 
+            'Ditolak': 'Ditolak',
+            'Selesai': 'Selesai'
+        }[status] || status;
+        
+        showNotification(`Status peminjaman berhasil diubah menjadi: ${statusText} (Oleh: ${asisten})`);
+    }
+
+    // Update fungsi updateStatus biasa (untuk dikembalikan)
+    function updateStatus(id, status) {
+        const data = JSON.parse(localStorage.getItem(id) || '{}');
+        data.s = status;
+        localStorage.setItem(id, JSON.stringify(data));
+        loadPeminjamanData();
+        
+        const statusText = {
+            'Menunggu': 'Menunggu Persetujuan',
+            'Disetujui': 'Disetujui', 
+            'Ditolak': 'Ditolak',
+            'Selesai': 'Selesai'
+        }[status] || status;
+        
+        showNotification(`Status peminjaman berhasil diubah menjadi: ${statusText}`);
+    }
+
+    // ========== FUNGSI EXPORT PDF ==========
+    async function exportToPDF() {
+      if (!currentModalData) {
+        showNotification('Tidak ada data untuk diexport!', 'error');
+        return;
+      }
+
+      const data = currentModalData.data;
+      
+      if (!data) {
+        showNotification('Data tidak ditemukan!', 'error');
+        return;
+      }
+
+      showNotification('Membuat PDF...', 'warning');
+
+      try {
+        // Pastikan jsPDF tersedia
+        if (typeof window.jspdf === 'undefined') {
+          showNotification('Error: Library PDF tidak tersedia!', 'error');
+          return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Header
+        doc.setFontSize(16);
+        doc.setTextColor(255, 102, 0);
+        doc.text('LABORATORIUM Survei dan Pemetaan', 105, 15, { align: 'center' });
+        
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Teknik Geodesi - ITENAS', 105, 22, { align: 'center' });
+        doc.text('DETAIL PEMINJAMAN ALAT', 105, 29, { align: 'center' });
+        
+        // Garis pembatas
+        doc.setDrawColor(255, 102, 0);
+        doc.line(20, 35, 190, 35);
+
+        let yPosition = 45;
+
+        // Data Peminjaman
+        doc.setFontSize(10);
+        doc.text(`Nomor Peminjaman: ${currentModalData.id}`, 20, yPosition);
+        yPosition += 8;
+        doc.text(`Nama Peminjam: ${data.n || '-'}`, 20, yPosition);
+        yPosition += 8;
+        doc.text(`NRP: ${data.nrp || '-'}`, 20, yPosition);
+        yPosition += 8;
+        doc.text(`Tanggal Pinjam: ${formatDateLong(data.tPinjam)}`, 20, yPosition);
+        yPosition += 8;
+        doc.text(`Tanggal Kembali: ${formatDateLong(data.tKembali)}`, 20, yPosition);
+        yPosition += 8;
+        doc.text(`Status: ${data.s || '-'}`, 20, yPosition);
+        yPosition += 8;
+        doc.text(`Keterangan: ${data.ket || '-'}`, 20, yPosition);
+        yPosition += 8;
+        
+        // Info Asisten Penanggung Jawab
+        if (data.asisten) {
+            doc.text(`Disetujui oleh: ${data.asisten}`, 20, yPosition);
+            yPosition += 8;
+            if (data.tanggalPersetujuan) {
+                doc.text(`Tanggal Persetujuan: ${formatDateLong(data.tanggalPersetujuan)}`, 20, yPosition);
+                yPosition += 8;
+            }
+        }
+        
+        yPosition += 4;
+
+        // Daftar Alat
+        doc.setFontSize(11);
+        doc.setTextColor(255, 102, 0);
+        doc.text('ALAT YANG DIPINJAM:', 20, yPosition);
+        yPosition += 8;
+
+        if (data.alat && data.alat.length > 0) {
+          // Header tabel
+          doc.setFillColor(255, 102, 0);
+          doc.setTextColor(255, 255, 255);
+          doc.rect(20, yPosition, 170, 8, 'F');
+          doc.text('No', 25, yPosition + 6);
+          doc.text('Nama Alat', 40, yPosition + 6);
+          doc.text('Jumlah', 120, yPosition + 6);
+          doc.text('Nomor Seri', 140, yPosition + 6);
+          yPosition += 8;
+
+          doc.setTextColor(0, 0, 0);
+          data.alat.forEach((alat, index) => {
+            if (yPosition > 270) {
+              doc.addPage();
+              yPosition = 20;
+            }
+            
+            doc.text(`${index + 1}`, 25, yPosition + 6);
+            doc.text(alat.nama || '-', 40, yPosition + 6);
+            doc.text(`${alat.jumlah || '-'}`, 120, yPosition + 6);
+            doc.text(alat.nomorSeri || '-', 140, yPosition + 6);
+            yPosition += 8;
+          });
+        } else {
+          doc.setTextColor(0, 0, 0);
+          doc.text('Tidak ada data alat', 20, yPosition);
+          yPosition += 8;
+        }
+
+        yPosition += 10;
+        doc.setTextColor(100, 100, 100);
+        doc.setFontSize(8);
+        doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 20, yPosition);
+
+        // Simpan PDF dengan nama peminjam dan NRP
+        const fileName = createSafeFileName(data.n, data.nrp);
+        const namaFile = `Peminjaman_${fileName}.pdf`;
+        doc.save(namaFile);
+        
+        showNotification('PDF berhasil diexport!', 'success');
+        
+      } catch (error) {
+        console.error('Error creating PDF:', error);
+        showNotification('Gagal membuat PDF!', 'error');
+      }
+    }
+
+    // ========== FUNGSI EXPORT EXCEL ==========
+    function exportToExcel() {
+      if (!currentModalData) {
+        showNotification('Tidak ada data untuk diexport!', 'error');
+        return;
+      }
+
+      const data = currentModalData.data;
+      
+      if (!data) {
+        showNotification('Data tidak ditemukan!', 'error');
+        return;
+      }
+
+      try {
+        // Buat CSV content
+        let csvContent = "LABORATORIUM Survei dan Pemetaan - DETAIL PEMINJAMAN ALAT\n\n";
+        csvContent += "Data Peminjaman:\n";
+        csvContent += `Nomor Peminjaman,${currentModalData.id}\n`;
+        csvContent += `Nama Peminjam,${data.n || '-'}\n`;
+        csvContent += `NRP,${data.nrp || '-'}\n`;
+        csvContent += `Tanggal Pinjam,${formatDateLong(data.tPinjam)}\n`;
+        csvContent += `Tanggal Kembali,${formatDateLong(data.tKembali)}\n`;
+        csvContent += `Status,${data.s || '-'}\n`;
+        csvContent += `Keterangan,${data.ket || '-'}\n`;
+        if (data.asisten) {
+            csvContent += `Disetujui oleh,${data.asisten}\n`;
+            if (data.tanggalPersetujuan) {
+                csvContent += `Tanggal Persetujuan,${formatDateLong(data.tanggalPersetujuan)}\n`;
+            }
+        }
+        csvContent += `\n`;
+        
+        csvContent += "Alat yang Dipinjam:\n";
+        csvContent += "No,Nama Alat,Jumlah,Nomor Seri\n";
+        
+        if (data.alat && data.alat.length > 0) {
+          data.alat.forEach((alat, index) => {
+            csvContent += `${index + 1},${alat.nama || '-'},${alat.jumlah || '-'},${alat.nomorSeri || '-'}\n`;
+          });
+        } else {
+          csvContent += "Tidak ada data alat\n";
+        }
+        
+        csvContent += `\nDicetak pada,${new Date().toLocaleString('id-ID')}\n`;
+
+        // Buat blob dan download dengan nama peminjam dan NRP
+        const fileName = createSafeFileName(data.n, data.nrp);
+        const namaFile = `Peminjaman_${fileName}.csv`;
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        
+        link.setAttribute("href", url);
+        link.setAttribute("download", namaFile);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showNotification('File Excel berhasil diexport!', 'success');
+        
+      } catch (error) {
+        console.error('Error creating Excel:', error);
+        showNotification('Gagal membuat file Excel!', 'error');
+      }
+    }
+
+    // ========== MANAJEMEN STORAGE ==========
+    function updateStorageInfo() {
+      let total = 0;
+      let count = 0;
+      
+      for (let key in localStorage) {
+        if (localStorage.hasOwnProperty(key) && key.startsWith('p_')) {
+          total += localStorage[key].length;
+          count++;
+        }
+      }
+      
+      const usedMB = (total / (1024 * 1024)).toFixed(2);
+      const percentage = (total / (5 * 1024 * 1024)) * 100;
+      const statusColor = percentage > 80 ? 'storage-warning' : 'storage-normal';
+      const statusText = percentage > 80 ? '🟥 HAMPIR PENUH' : percentage > 60 ? '🟨 NORMAL' : '🟢 AMAN';
+      
+      infoStorage.innerHTML = `
+        <strong>📊 Status Penyimpanan:</strong><br>
+        • Data tersimpan: <strong>${count} entri</strong><br>
+        • Kapasitas terpakai: <strong>${usedMB} MB / 5 MB (${percentage.toFixed(1)}%)</strong><br>
+        • Status: <span class="${statusColor}">${statusText}</span>
+      `;
+    }
+
+    // ========== FUNGSI LOAD DATA ==========
+    function loadPeminjamanData() {
+        // Update info jadwal hari ini
+        updateScheduleInfo();
+        updateStorageInfo();
+
+        // Ambil daftar ID peminjaman dari localStorage
+        const daftarPeminjaman = JSON.parse(localStorage.getItem('daftar') || '[]');
+        const filterValue = filterStatus.value;
+        const searchValue = searchInput.value.toLowerCase();
+        
+        tbodyPeminjaman.innerHTML = '';
+        
+        if (daftarPeminjaman.length === 0) {
+            emptyState.style.display = 'block';
+            return;
+        } else {
+            emptyState.style.display = 'none';
+        }
+        
+        let nomorUrut = 1;
+        let dataFound = false;
+        
+        daftarPeminjaman.forEach(id => {
+            const data = JSON.parse(localStorage.getItem(id) || '{}');
+            
+            // Filter berdasarkan status
+            if (filterValue !== 'semua' && data.s !== filterValue) {
+                return;
+            }
+            
+            // Filter berdasarkan pencarian
+            if (searchValue && 
+                !data.n?.toLowerCase().includes(searchValue) && 
+                !data.nrp?.toLowerCase().includes(searchValue)) {
+                return;
+            }
+            
+            dataFound = true;
+            
+            // Hitung total alat
+            const totalAlat = data.alat ? 
+                data.alat.reduce((total, alat) => total + (parseInt(alat.jumlah) || 0), 0) : 0;
+            
+            // Format status lengkap
+            const statusText = {
+                'Menunggu': 'Menunggu Persetujuan',
+                'Disetujui': 'Disetujui',
+                'Ditolak': 'Ditolak',
+                'Selesai': 'Selesai'
+            }[data.s] || data.s;
+            
+            // Buat baris tabel
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${nomorUrut}</td>
+                <td><strong>${data.n || '-'}</strong></td>
+                <td>${data.nrp || '-'}</td>
+                <td>${formatDate(data.tPinjam)}</td>
+                <td>${formatDate(data.tKembali)}</td>
+                <td><center><strong>${totalAlat}</strong></center></td>
+                <td>
+                    <span class="status status-${getStatusClass(data.s)}">${statusText}</span>
+                    ${data.asisten ? `<br><small style="color: #666; font-size: 0.8rem;">Oleh: ${data.asisten}</small>` : ''}
+                </td>
+                <td>
+                    <button class="btn-action btn-detail" data-id="${id}">📋 Detail</button>
+                    ${data.s === 'Menunggu' ? 
+                        `<button class="btn-action btn-setuju" data-id="${id}">✅ Setujui</button>
+                         <button class="btn-action btn-tolak" data-id="${id}">❌ Tolak</button>` : 
+                     data.s === 'Disetujui' ?
+                        `<button class="btn-action btn-dikembalikan" data-id="${id}">📦 Dikembalikan</button>` :
+                     ''}
+                    <button class="btn-action btn-hapus-satu" data-id="${id}">🗑️ Hapus</button>
+                </td>
+            `;
+            
+            tbodyPeminjaman.appendChild(tr);
+            nomorUrut++;
+        });
+        
+        if (!dataFound) {
+            tbodyPeminjaman.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:#666;">Tidak ada data yang sesuai dengan filter</td></tr>';
+        }
+    }
+
+    function updateScheduleInfo() {
+        const hariIni = getHariInIndonesia();
+        const asistenHariIni = getAsistenHariIni();
+        
+        scheduleInfo.innerHTML = `
+            <strong>📅 Jadwal Piket ${hariIni.toUpperCase()}:</strong> ${asistenHariIni.join(', ')}
+        `;
+    }
+
+    function getStatusClass(status) {
+        switch(status) {
+            case 'Menunggu': return 'menunggu';
+            case 'Disetujui': return 'disetujui';
+            case 'Ditolak': return 'ditolak';
+            case 'Selesai': return 'selesai';
+            default: return 'menunggu';
+        }
+    }
+
+    // ========== FUNGSI HAPUS DATA ==========
+    async function hapus50PersenTertua() {
+      const daftarPeminjaman = JSON.parse(localStorage.getItem('daftar') || '[]');
+      
+      if (daftarPeminjaman.length === 0) {
+        showNotification('Tidak ada data yang bisa dihapus!', 'warning');
+        return;
+      }
+      
+      const jumlahHapus = Math.ceil(daftarPeminjaman.length * 0.5);
+      
+      if (confirm(`Anda akan menghapus ${jumlahHapus} data tertua. Lanjutkan?`)) {
+        const dataAkanDihapus = daftarPeminjaman.slice(0, jumlahHapus);
+        
+        // Hapus dari localStorage
+        dataAkanDihapus.forEach(id => {
+          localStorage.removeItem(id);
+        });
+        
+        // Update daftar
+        const daftarBaru = daftarPeminjaman.slice(jumlahHapus);
+        localStorage.setItem('daftar', JSON.stringify(daftarBaru));
+        
+        showNotification(`✅ Berhasil menghapus ${jumlahHapus} data tertua!`);
+        loadPeminjamanData();
+      }
+    }
+
+    async function hapusDataSelesai() {
+      const daftarPeminjaman = JSON.parse(localStorage.getItem('daftar') || '[]');
+      const daftarBaru = [];
+      let jumlahDihapus = 0;
+      
+      daftarPeminjaman.forEach(id => {
+        const data = JSON.parse(localStorage.getItem(id) || '{}');
+        if (data.s === 'Selesai') {
+          localStorage.removeItem(id);
+          jumlahDihapus++;
+        } else {
+          daftarBaru.push(id);
+        }
+      });
+      
+      localStorage.setItem('daftar', JSON.stringify(daftarBaru));
+      showNotification(`✅ Berhasil menghapus ${jumlahDihapus} data yang sudah selesai!`);
+      loadPeminjamanData();
+    }
+
+    async function hapusDataDitolak() {
+      const daftarPeminjaman = JSON.parse(localStorage.getItem('daftar') || '[]');
+      const daftarBaru = [];
+      let jumlahDihapus = 0;
+      
+      daftarPeminjaman.forEach(id => {
+        const data = JSON.parse(localStorage.getItem(id) || '{}');
+        if (data.s === 'Ditolak') {
+          localStorage.removeItem(id);
+          jumlahDihapus++;
+        } else {
+          daftarBaru.push(id);
+        }
+      });
+      
+      localStorage.setItem('daftar', JSON.stringify(daftarBaru));
+      showNotification(`✅ Berhasil menghapus ${jumlahDihapus} data yang ditolak!`);
+      loadPeminjamanData();
+    }
+
+    async function hapusSemuaData() {
+      if (confirm('⚠️ ANDA AKAN MENGHAPUS SEMUA DATA! Tindakan ini tidak dapat dibatalkan. Yakin ingin melanjutkan?')) {
+        const daftarPeminjaman = JSON.parse(localStorage.getItem('daftar') || '[]');
+        
+        // Hapus semua data peminjaman
+        daftarPeminjaman.forEach(id => {
+          localStorage.removeItem(id);
+        });
+        
+        // Hapus daftar itu sendiri
+        localStorage.removeItem('daftar');
+        
+        showNotification('✅ Semua data berhasil dihapus!');
+        loadPeminjamanData();
+      }
+    }
+
+    function hapusSatuData(id) {
+      const data = JSON.parse(localStorage.getItem(id) || '{}');
+      const nama = data.n || 'Data ini';
+      
+      if (confirm(`Hapus permintaan peminjaman dari ${nama}?`)) {
+        // Hapus dari localStorage
+        localStorage.removeItem(id);
+        
+        // Hapus dari daftar
+        const daftarPeminjaman = JSON.parse(localStorage.getItem('daftar') || '[]');
+        const daftarBaru = daftarPeminjaman.filter(itemId => itemId !== id);
+        localStorage.setItem('daftar', JSON.stringify(daftarBaru));
+        
+        showNotification('✅ Data berhasil dihapus!');
+        loadPeminjamanData();
+        
+        // Tutup modal jika terbuka
+        if (currentModalData && currentModalData.id === id) {
+          modalDetail.style.display = 'none';
+        }
+      }
+    }
+
+    function hapusSatuDataFromModal() {
+      if (currentModalData) {
+        hapusSatuData(currentModalData.id);
+      }
+    }
+
+    // ========== MODAL DAN DETAIL ==========
+    function showDetailModal(id) {
+      const data = JSON.parse(localStorage.getItem(id) || '{}');
+      currentModalData = { id, data };
+      
+      let alatHTML = '';
+      if (data.alat && data.alat.length > 0) {
+        alatHTML = `
+          <div class="alat-list">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nama Alat</th>
+                  <th>Jumlah</th>
+                  <th>Nomor Seri</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.alat.map(alat => `
+                  <tr>
+                    <td><strong>${alat.nama}</strong></td>
+                    <td><center>${alat.jumlah}</center></td>
+                    <td>${alat.nomorSeri || '-'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else {
+        alatHTML = '<p style="text-align: center; color: #666; padding: 20px;">Tidak ada data alat</p>';
+      }
+      
+      // Format status lengkap
+      const statusText = {
+        'Menunggu': 'Menunggu Persetujuan',
+        'Disetujui': 'Disetujui',
+        'Ditolak': 'Ditolak',
+        'Selesai': 'Selesai'
+      }[data.s] || data.s;
+      
+      modalBody.innerHTML = `
+        <div class="detail-row">
+          <div class="detail-label">ID Peminjaman:</div>
+          <div class="detail-value"><strong>${id}</strong></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Nama Peminjam:</div>
+          <div class="detail-value"><strong>${data.n || '-'}</strong></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">NRP:</div>
+          <div class="detail-value">${data.nrp || '-'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Tanggal Peminjaman:</div>
+          <div class="detail-value">${formatDateLong(data.tPinjam)}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Tanggal Pengembalian:</div>
+          <div class="detail-value">${formatDateLong(data.tKembali)}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Keterangan:</div>
+          <div class="detail-value">${data.ket || '-'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Status:</div>
+          <div class="detail-value"><span class="status status-${getStatusClass(data.s)}">${statusText}</span></div>
+        </div>
+        ${data.asisten ? `
+        <div class="detail-row">
+          <div class="detail-label">Asisten Penanggung Jawab:</div>
+          <div class="detail-value">
+            <strong>${data.asisten}</strong>
+            ${data.tanggalPersetujuan ? ` (${formatDateLong(data.tanggalPersetujuan)})` : ''}
+          </div>
+        </div>
+        ` : ''}
+        ${data.s === 'Disetujui' ? `
+        <div class="detail-row">
+          <div class="detail-label">Aksi:</div>
+          <div class="detail-value">
+            <button class="btn-action btn-dikembalikan" onclick="updateStatus('${id}', 'Selesai')" style="padding: 8px 16px;">
+              📦 Tandai Sudah Dikembalikan
+            </button>
+          </div>
+        </div>
+        ` : ''}
+        <div class="detail-row">
+          <div class="detail-label">Tanggal Pengajuan:</div>
+          <div class="detail-value">${formatDateLong(data.t)}</div>
+        </div>
+        <div class="detail-row" style="flex-direction: column; align-items: stretch;">
+          <div class="detail-label">Alat yang Dipinjam:</div>
+          <div class="detail-value">${alatHTML}</div>
+        </div>
+      `;
+      
+      modalDetail.style.display = 'flex';
+    }
+
+    // ========== EVENT LISTENERS ==========
+    btnHapusOtomatis.addEventListener('click', hapus50PersenTertua);
+    btnHapusSelesai.addEventListener('click', hapusDataSelesai);
+    btnHapusDitolak.addEventListener('click', hapusDataDitolak);
+    btnHapusSemua.addEventListener('click', hapusSemuaData);
+
+    // Event listeners untuk toggle pendaftaran asisten
+    btnAktifkanDaftar.addEventListener('click', aktifkanDaftarAsisten);
+    btnNonaktifkanDaftar.addEventListener('click', nonaktifkanDaftarAsisten);
+
+    filterStatus.addEventListener('change', loadPeminjamanData);
+    searchInput.addEventListener('input', loadPeminjamanData);
+    btnRefresh.addEventListener('click', loadPeminjamanData);
+    btnExportPDF.addEventListener('click', exportToPDF);
+    btnExportExcel.addEventListener('click', exportToExcel);
+
+    // Event delegation untuk tombol aksi di tabel
+    tbodyPeminjaman.addEventListener('click', function(e) {
+      const target = e.target;
+      const id = target.getAttribute('data-id');
+      
+      if (target.classList.contains('btn-detail')) {
+        showDetailModal(id);
+      } else if (target.classList.contains('btn-setuju')) {
+        showAsistenPopup(id, 'setuju');
+      } else if (target.classList.contains('btn-tolak')) {
+        showAsistenPopup(id, 'tolak');
+      } else if (target.classList.contains('btn-dikembalikan')) {
+        if (confirm('Apakah alat sudah dikembalikan? Status akan diubah menjadi Selesai.')) {
+          updateStatus(id, 'Selesai');
+        }
+      } else if (target.classList.contains('btn-hapus-satu')) {
+        hapusSatuData(id);
+      }
+    });
+
+    // Tutup modal
+    closeModal.addEventListener('click', function() {
+      modalDetail.style.display = 'none';
+      currentModalData = null;
+    });
+
+    window.addEventListener('click', function(e) {
+      if (e.target === modalDetail) {
+        modalDetail.style.display = 'none';
+        currentModalData = null;
+      }
+    });
+
+    // ========== INISIALISASI ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      loadPeminjamanData();
+      updateStatusDaftarAsisten(); // Inisialisasi status toggle
+      
+      // Auto-refresh setiap 30 detik
+      setInterval(loadPeminjamanData, 30000);
+      
+      // Tampilkan notifikasi selamat datang
+      setTimeout(() => {
+        showNotification('Panel Admin siap! Data akan diperbarui otomatis.', 'success');
+      }, 1000);
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      // Ctrl + R untuk refresh
+      if (e.ctrlKey && e.key === 'r') {
+        e.preventDefault();
+        loadPeminjamanData();
+      }
+      // Escape untuk tutup modal
+      if (e.key === 'Escape') {
+        modalDetail.style.display = 'none';
+        currentModalData = null;
+        closeAsistenPopup();
+      }
+    });
+  </script>
+</body>
+</html>

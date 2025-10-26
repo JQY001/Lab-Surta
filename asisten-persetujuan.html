@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Asisten - Persetujuan Peminjaman Alat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f8f9fa;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      background-color: #ff6600;
+      color: #fff;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      height: 70px;
+    }
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 1001;
+    }
+    header .logo img {
+      width: 48px;
+      height: 48px;
+      border-radius: 6px;
+      object-fit: contain;
+    }
+    header .text-logo h1 {
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 1.1;
+      color: #fff;
+      margin: 0;
+    }
+    header .text-logo span {
+      font-weight: 400;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.85);
+      margin: 0;
+    }
+    .logout-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 1px solid white;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-1px);
+    }
+
+    /* MAIN */
+    main {
+      max-width: 1200px;
+      margin: 40px auto 60px;
+      padding: 0 20px;
+      flex-grow: 1;
+      width: 100%;
+    }
+    h2.section-title {
+      color: #ff6600;
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 24px;
+      border-left: 8px solid #ff6600;
+      padding-left: 12px;
+      text-transform: uppercase;
+    }
+
+    /* Info Hak Akses */
+    .access-info {
+      margin: 20px 0;
+      padding: 20px;
+      background: #e8f4ff;
+      border-radius: 12px;
+      border: 2px solid #4dabf7;
+      box-shadow: 0 4px 12px rgba(77, 171, 247, 0.1);
+    }
+    .access-info h4 {
+      color: #1971c2;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .access-info h4::before {
+      content: "👨‍💼";
+    }
+    .access-info ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .access-info li {
+      padding: 5px 0;
+      color: #1971c2;
+    }
+    .access-info li::before {
+      content: "✓ ";
+      font-weight: bold;
+      color: #2f9e44;
+    }
+
+    /* Info Jadwal Hari Ini */
+    .schedule-info {
+      margin: 15px 0;
+      padding: 15px;
+      background: #fff3e6;
+      border-radius: 8px;
+      border-left: 4px solid #ff6600;
+    }
+    .schedule-info strong {
+      color: #cc5200;
+    }
+
+    /* Filter dan Pencarian */
+    .filter-section {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(255, 102, 0, 0.1);
+    }
+    .filter-section select, .filter-section input {
+      padding: 10px 14px;
+      border: 2px solid #ff6600;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      min-width: 200px;
+    }
+    .filter-section button {
+      background-color: #ff6600;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+    .filter-section button:hover {
+      background-color: #cc5200;
+      transform: translateY(-2px);
+    }
+
+    /* Tabel Peminjaman */
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(255, 102, 0, 0.15);
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1rem;
+    }
+    th, td {
+      border: 1px solid #ff6600;
+      padding: 12px 15px;
+      text-align: left;
+    }
+    th {
+      background-color: #fff3e6;
+      color: #cc5200;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    tr:nth-child(even) {
+      background-color: #fffaf5;
+    }
+    tr:hover {
+      background-color: #fff0e6;
+    }
+    .status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      text-align: center;
+      display: inline-block;
+      font-size: 0.85rem;
+    }
+    .status-menunggu {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    .status-disetujui {
+      background-color: #d1edff;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    .status-ditolak {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .status-selesai {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .btn-action {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 2px;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+    }
+    .btn-setuju {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn-setuju:hover {
+      background-color: #218838;
+    }
+    .btn-tolak {
+      background-color: #dc3545;
+      color: white;
+    }
+    .btn-tolak:hover {
+      background-color: #c82333;
+    }
+    .btn-detail {
+      background-color: #ffc107;
+      color: #212529;
+    }
+    .btn-detail:hover {
+      background-color: #e0a800;
+    }
+    .btn-dikembalikan {
+      background-color: #17a2b8;
+      color: white;
+    }
+    .btn-dikembalikan:hover {
+      background-color: #138496;
+    }
+
+    /* Modal Detail */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ff6600;
+      padding-bottom: 15px;
+    }
+    .modal-title {
+      color: #ff6600;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      padding: 5px;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .close-modal:hover {
+      background-color: #f8f9fa;
+    }
+    .detail-row {
+      display: flex;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+    }
+    .detail-label {
+      font-weight: 600;
+      width: 200px;
+      color: #ff6600;
+      flex-shrink: 0;
+    }
+    .detail-value {
+      flex: 1;
+    }
+    .alat-list {
+      margin-top: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .alat-list table {
+      margin: 0;
+      box-shadow: none;
+    }
+    .alat-list th {
+      background-color: #e9ecef;
+      color: #495057;
+      font-weight: 600;
+    }
+    .alat-list th, .alat-list td {
+      border: 1px solid #dee2e6;
+      padding: 10px;
+    }
+
+    /* Style untuk Popup Pilih Asisten */
+    .form-select, .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #ff6600;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .form-select:focus, .form-input:focus {
+      outline: none;
+      border-color: #cc5200;
+      box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn-cancel {
+      padding: 10px 20px;
+      background: #6c757d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+      background: #5a6268;
+      transform: translateY(-1px);
+    }
+
+    .btn-confirm {
+      padding: 10px 20px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-confirm:hover {
+      background: #218838;
+      transform: translateY(-1px);
+    }
+
+    /* Notifikasi */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      z-index: 2000;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .notification.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .notification.success {
+      background-color: #28a745;
+    }
+    .notification.error {
+      background-color: #dc3545;
+    }
+    .notification.warning {
+      background-color: #ffc107;
+      color: #212529;
+    }
+
+    /* FOOTER */
+    footer {
+      background-color: #ff6600;
+      color: #333;
+      text-align: center;
+      font-size: 13px;
+      padding: 18px 20px;
+      flex-shrink: 0;
+      height: 60px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header {
+        padding: 15px 20px;
+      }
+      
+      .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .filter-section > * {
+        width: 100%;
+      }
+      .detail-row {
+        flex-direction: column;
+      }
+      .detail-label {
+        width: 100%;
+        margin-bottom: 5px;
+      }
+      table {
+        font-size: 0.9rem;
+      }
+      th, td {
+        padding: 8px 10px;
+      }
+      .modal-content {
+        padding: 20px;
+        margin: 20px;
+      }
+      .btn-action {
+        display: block;
+        width: 100%;
+        margin: 2px 0;
+      }
+    }
+
+    /* Loading State */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #ff6600;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Notifikasi -->
+  <div id="notification" class="notification"></div>
+
+  <header>
+    <div class="logo">
+      <img src="IMG/logoitenas.png" alt="Logo Lab Surta" />
+      <div class="text-logo">
+        <h1>Laboratorium Survei dan Pemetaan</h1>
+        <span>Teknik Geodesi - Asisten</span>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <span style="color: white; font-size: 14px;" id="userWelcome">Asisten</span>
+      <button class="logout-btn" onclick="userLogout()">
+         Logout
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <h2 class="section-title">Persetujuan Peminjaman Alat</h2>
+
+
+    <!-- Info Jadwal Hari Ini -->
+    <div class="schedule-info" id="scheduleInfo">
+      <!-- Info jadwal akan diisi JavaScript -->
+    </div>
+
+    <!-- Filter dan Pencarian -->
+    <div class="filter-section">
+      <select id="filterStatus">
+        <option value="semua">Semua Status</option>
+        <option value="Menunggu">Menunggu Persetujuan</option>
+        <option value="Disetujui">Disetujui</option>
+        <option value="Ditolak">Ditolak</option>
+        <option value="Selesai">Selesai</option>
+      </select>
+      <input type="text" id="searchInput" placeholder="Cari berdasarkan nama atau NRP...">
+      <button id="btnRefresh">
+        🔄 Refresh Data
+      </button>
+    </div>
+
+    <div class="table-container">
+      <table id="tabelPeminjaman">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Peminjam</th>
+            <th>NRP</th>
+            <th>Tanggal Pinjam</th>
+            <th>Tanggal Kembali</th>
+            <th>Jumlah Alat</th>
+            <th>Status</th>
+            <th width="180">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyPeminjaman">
+          <!-- Data akan diisi oleh JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Info Data Kosong -->
+    <div id="emptyState" style="display: none; text-align: center; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(255,102,0,0.1);">
+      <div style="font-size: 4rem; margin-bottom: 20px;">📭</div>
+      <h3 style="color: #ff6600; margin-bottom: 10px;">Belum Ada Data Peminjaman</h3>
+      <p style="color: #666; margin-bottom: 20px;">Tidak ada data peminjaman yang ditemukan. Data akan muncul ketika ada pengajuan peminjaman baru.</p>
+      <button onclick="location.reload()" style="background-color: #ff6600; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+        Refresh Halaman
+      </button>
+    </div>
+  </main>
+
+  <!-- Modal Detail Peminjaman -->
+  <div id="modalDetail" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Detail Peminjaman</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div id="modalBody">
+        <!-- Detail akan diisi oleh JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Laboratorium Survei dan Pemetaan - Teknik Geodesi</p>
+  </footer>
+
+  <script>
+    // ========== JADWAL ASISTEN PER HARI ==========
+    const JADWAL_ASISTEN = {
+        'senin': [
+            'Muhamad Luthfi Ramdani', 
+            'Muhammad Ridho Madjid'
+        ],
+        'selasa': [
+            'Dedi Wijaya',
+            'Noval Favian Bima Putra'
+        ],
+        'rabu': [
+            'Muamarul Fathir', 
+            'Aulia Putri Maharani'
+        ],
+        'kamis': [
+            'Mawaritsa Etufirka',
+            'Zyfa Julianne Alifa'
+        ],
+        'jumat': [
+            'Mochamad Rizki M.P',
+            'Tantry Sabina Khoirunnisa'
+        ],
+        'sabtu': [
+            'Libur'
+        ],
+        'minggu': [
+            'Libur'
+        ]
+    };
+
+    // Fungsi untuk mendapatkan hari dalam bahasa Indonesia
+    function getHariInIndonesia() {
+        const hariInggris = new Date().getDay();
+        const hariMap = {
+            0: 'minggu',
+            1: 'senin', 
+            2: 'selasa',
+            3: 'rabu',
+            4: 'kamis',
+            5: 'jumat'
+        };
+        return hariMap[hariInggris];
+    }
+
+    // Fungsi untuk mendapatkan daftar asisten hari ini
+    function getAsistenHariIni() {
+        const hariIni = getHariInIndonesia();
+        return JADWAL_ASISTEN[hariIni] || ['Asisten Tidak Tersedia'];
+    }
+
+    // ========== CEK STATUS LOGIN ==========
+    function checkUserLogin() {
+        const isLoggedIn = localStorage.getItem('asistenLoggedIn');
+        const loginTime = localStorage.getItem('loginTime');
+        
+        // Jika belum login atau login lebih dari 8 jam
+        if (!isLoggedIn || !loginTime || (Date.now() - parseInt(loginTime)) > 8 * 60 * 60 * 1000) {
+            localStorage.removeItem('asistenLoggedIn');
+            localStorage.removeItem('loginTime');
+            localStorage.removeItem('userRole');
+            window.location.href = 'login.html';
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Cek login saat halaman dimuat
+    if (!checkUserLogin()) {
+        window.location.href = 'login.html';
+    }
+
+    // Auto logout setelah 8 jam
+    setTimeout(() => {
+        localStorage.removeItem('asistenLoggedIn');
+        localStorage.removeItem('loginTime');
+        localStorage.removeItem('userRole');
+        alert('Sesi telah berakhir. Silakan login kembali.');
+        window.location.href = 'login.html';
+    }, 8 * 60 * 60 * 1000);
+
+    // Logout function
+    function userLogout() {
+        localStorage.removeItem('asistenLoggedIn');
+        localStorage.removeItem('loginTime');
+        localStorage.removeItem('userRole');
+        window.location.href = 'login.html';
+    }
+
+    // ========== ELEMEN DOM ==========
+    const tbodyPeminjaman = document.getElementById('tbodyPeminjaman');
+    const filterStatus = document.getElementById('filterStatus');
+    const searchInput = document.getElementById('searchInput');
+    const btnRefresh = document.getElementById('btnRefresh');
+    const modalDetail = document.getElementById('modalDetail');
+    const modalBody = document.getElementById('modalBody');
+    const closeModal = document.querySelector('.close-modal');
+    const emptyState = document.getElementById('emptyState');
+    const notification = document.getElementById('notification');
+    const scheduleInfo = document.getElementById('scheduleInfo');
+
+    // Variabel global untuk data yang sedang dilihat
+    let currentModalData = null;
+
+    // ========== FUNGSI UTILITAS ==========
+    function showNotification(message, type = 'success') {
+      notification.textContent = message;
+      notification.className = `notification ${type} show`;
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 4000);
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    }
+
+    function formatDateLong(dateString) {
+      if (!dateString) return '-';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+
+    // ========== FUNGSI POPUP PILIH ASISTEN ==========
+    function showAsistenPopup(id, action) {
+        const asistenHariIni = getAsistenHariIni();
+        const hariIni = getHariInIndonesia();
+        
+        // Buat opsi asisten berdasarkan hari ini
+        let optionsHTML = '<option value="">-- Pilih Asisten --</option>';
+        
+        asistenHariIni.forEach(asisten => {
+            optionsHTML += `<option value="${asisten}">${asisten}</option>`;
+        });
+        
+        // Tambahkan opsi "lainnya" untuk fleksibilitas
+        optionsHTML += '<option value="lainnya">-- Asisten Lain --</option>';
+
+        // Buat modal popup untuk memilih asisten
+        const popupHTML = `
+            <div id="asistenPopup" class="modal" style="display: flex;">
+                <div class="modal-content" style="max-width: 450px;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Pilih Asisten Penanggung Jawab</h3>
+                        <button class="close-modal" onclick="closeAsistenPopup()">&times;</button>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div style="background: #e8f5e8; padding: 10px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #28a745;">
+                            <strong>📅 Jadwal Hari Ini (${hariIni.toUpperCase()})</strong>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="selectAsisten">Pilih Asisten:</label>
+                            <select id="selectAsisten" class="form-select">
+                                ${optionsHTML}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="inputAsistenLainContainer" style="display: none;">
+                            <label for="inputAsistenLain">Ketik nama asisten:</label>
+                            <input type="text" id="inputAsistenLain" placeholder="Masukkan nama asisten..." class="form-input">
+                        </div>
+                        
+                        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                            <button onclick="closeAsistenPopup()" class="btn-cancel">Batal</button>
+                            <button onclick="processApprovalWithAsisten('${id}', '${action}')" class="btn-confirm">
+                                ${action === 'setuju' ? '✅ Setujui' : '❌ Tolak'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Tambahkan popup ke body
+        document.body.insertAdjacentHTML('beforeend', popupHTML);
+        
+        // Event listener untuk select asisten
+        document.getElementById('selectAsisten').addEventListener('change', function() {
+            const container = document.getElementById('inputAsistenLainContainer');
+            if (this.value === 'lainnya') {
+                container.style.display = 'block';
+                document.getElementById('inputAsistenLain').focus();
+            } else {
+                container.style.display = 'none';
+                document.getElementById('inputAsistenLain').value = '';
+            }
+        });
+    }
+
+    function closeAsistenPopup() {
+        const popup = document.getElementById('asistenPopup');
+        if (popup) {
+            popup.remove();
+        }
+    }
+
+    function processApprovalWithAsisten(id, action) {
+        const selectAsisten = document.getElementById('selectAsisten');
+        const inputAsistenLain = document.getElementById('inputAsistenLain');
+        
+        let namaAsisten = selectAsisten.value;
+        
+        // Jika memilih "lainnya" dan ada input manual
+        if (namaAsisten === 'lainnya') {
+            namaAsisten = inputAsistenLain.value.trim();
+        }
+        
+        // Validasi
+        if (!namaAsisten) {
+            showNotification('Harap pilih atau ketik nama asisten!', 'error');
+            return;
+        }
+        
+        // Tutup popup
+        closeAsistenPopup();
+        
+        // Proses persetujuan/penolakan
+        if (action === 'setuju') {
+            if (confirm(`Setujui peminjaman ini dengan penanggung jawab: ${namaAsisten}?`)) {
+                updateStatusWithAsisten(id, 'Disetujui', namaAsisten);
+            }
+        } else if (action === 'tolak') {
+            if (confirm(`Tolak peminjaman ini dengan penanggung jawab: ${namaAsisten}?`)) {
+                updateStatusWithAsisten(id, 'Ditolak', namaAsisten);
+            }
+        }
+    }
+
+    function updateStatusWithAsisten(id, status, asisten) {
+        const data = JSON.parse(localStorage.getItem(id) || '{}');
+        data.s = status;
+        data.asisten = asisten; // Simpan nama asisten yang menangani
+        data.tanggalPersetujuan = new Date().toISOString().split('T')[0];
+        localStorage.setItem(id, JSON.stringify(data));
+        loadPeminjamanData();
+        
+        const statusText = {
+            'Menunggu': 'Menunggu Persetujuan',
+            'Disetujui': 'Disetujui', 
+            'Ditolak': 'Ditolak',
+            'Selesai': 'Selesai'
+        }[status] || status;
+        
+        showNotification(`Status peminjaman berhasil diubah menjadi: ${statusText} (Oleh: ${asisten})`);
+    }
+
+    // Update fungsi updateStatus biasa (untuk dikembalikan)
+    function updateStatus(id, status) {
+        const data = JSON.parse(localStorage.getItem(id) || '{}');
+        data.s = status;
+        localStorage.setItem(id, JSON.stringify(data));
+        loadPeminjamanData();
+        
+        const statusText = {
+            'Menunggu': 'Menunggu Persetujuan',
+            'Disetujui': 'Disetujui', 
+            'Ditolak': 'Ditolak',
+            'Selesai': 'Selesai'
+        }[status] || status;
+        
+        showNotification(`Status peminjaman berhasil diubah menjadi: ${statusText}`);
+    }
+
+    // ========== FUNGSI LOAD DATA ==========
+    function loadPeminjamanData() {
+        // Update info jadwal hari ini
+        updateScheduleInfo();
+
+        // Ambil daftar ID peminjaman dari localStorage
+        const daftarPeminjaman = JSON.parse(localStorage.getItem('daftar') || '[]');
+        const filterValue = filterStatus.value;
+        const searchValue = searchInput.value.toLowerCase();
+        
+        tbodyPeminjaman.innerHTML = '';
+        
+        if (daftarPeminjaman.length === 0) {
+            emptyState.style.display = 'block';
+            return;
+        } else {
+            emptyState.style.display = 'none';
+        }
+        
+        let nomorUrut = 1;
+        let dataFound = false;
+        
+        daftarPeminjaman.forEach(id => {
+            const data = JSON.parse(localStorage.getItem(id) || '{}');
+            
+            // Filter berdasarkan status
+            if (filterValue !== 'semua' && data.s !== filterValue) {
+                return;
+            }
+            
+            // Filter berdasarkan pencarian
+            if (searchValue && 
+                !data.n?.toLowerCase().includes(searchValue) && 
+                !data.nrp?.toLowerCase().includes(searchValue)) {
+                return;
+            }
+            
+            dataFound = true;
+            
+            // Hitung total alat
+            const totalAlat = data.alat ? 
+                data.alat.reduce((total, alat) => total + (parseInt(alat.jumlah) || 0), 0) : 0;
+            
+            // Format status lengkap
+            const statusText = {
+                'Menunggu': 'Menunggu Persetujuan',
+                'Disetujui': 'Disetujui',
+                'Ditolak': 'Ditolak',
+                'Selesai': 'Selesai'
+            }[data.s] || data.s;
+            
+            // Buat baris tabel
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${nomorUrut}</td>
+                <td><strong>${data.n || '-'}</strong></td>
+                <td>${data.nrp || '-'}</td>
+                <td>${formatDate(data.tPinjam)}</td>
+                <td>${formatDate(data.tKembali)}</td>
+                <td><center><strong>${totalAlat}</strong></center></td>
+                <td>
+                    <span class="status status-${getStatusClass(data.s)}">${statusText}</span>
+                    ${data.asisten ? `<br><small style="color: #666; font-size: 0.8rem;">Oleh: ${data.asisten}</small>` : ''}
+                </td>
+                <td>
+                    <button class="btn-action btn-detail" data-id="${id}">📋 Detail</button>
+                    ${data.s === 'Menunggu' ? 
+                        `<button class="btn-action btn-setuju" data-id="${id}">✅ Setujui</button>
+                         <button class="btn-action btn-tolak" data-id="${id}">❌ Tolak</button>` : 
+                     data.s === 'Disetujui' ?
+                        `<button class="btn-action btn-dikembalikan" data-id="${id}">📦 Dikembalikan</button>` :
+                     ''}
+                </td>
+            `;
+            
+            tbodyPeminjaman.appendChild(tr);
+            nomorUrut++;
+        });
+        
+        if (!dataFound) {
+            tbodyPeminjaman.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px; color:#666;">Tidak ada data yang sesuai dengan filter</td></tr>';
+        }
+    }
+
+    function updateScheduleInfo() {
+        const hariIni = getHariInIndonesia();
+        const asistenHariIni = getAsistenHariIni();
+        
+        scheduleInfo.innerHTML = `
+            <strong>📅 Jadwal Piket ${hariIni.toUpperCase()}:</strong> ${asistenHariIni.join(', ')}
+        `;
+    }
+
+    function getStatusClass(status) {
+        switch(status) {
+            case 'Menunggu': return 'menunggu';
+            case 'Disetujui': return 'disetujui';
+            case 'Ditolak': return 'ditolak';
+            case 'Selesai': return 'selesai';
+            default: return 'menunggu';
+        }
+    }
+
+    // ========== MODAL DAN DETAIL ==========
+    function showDetailModal(id) {
+        const data = JSON.parse(localStorage.getItem(id) || '{}');
+        currentModalData = { id, data };
+        
+        let alatHTML = '';
+        if (data.alat && data.alat.length > 0) {
+            alatHTML = `
+                <div class="alat-list">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama Alat</th>
+                                <th>Jumlah</th>
+                                <th>Nomor Seri</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.alat.map(alat => `
+                                <tr>
+                                    <td><strong>${alat.nama}</strong></td>
+                                    <td><center>${alat.jumlah}</center></td>
+                                    <td>${alat.nomorSeri || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        } else {
+            alatHTML = '<p style="text-align: center; color: #666; padding: 20px;">Tidak ada data alat</p>';
+        }
+        
+        // Format status lengkap
+        const statusText = {
+            'Menunggu': 'Menunggu Persetujuan',
+            'Disetujui': 'Disetujui',
+            'Ditolak': 'Ditolak',
+            'Selesai': 'Selesai'
+        }[data.s] || data.s;
+        
+        modalBody.innerHTML = `
+            <div class="detail-row">
+                <div class="detail-label">ID Peminjaman:</div>
+                <div class="detail-value"><strong>${id}</strong></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Nama Peminjam:</div>
+                <div class="detail-value"><strong>${data.n || '-'}</strong></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">NRP:</div>
+                <div class="detail-value">${data.nrp || '-'}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Tanggal Peminjaman:</div>
+                <div class="detail-value">${formatDateLong(data.tPinjam)}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Tanggal Pengembalian:</div>
+                <div class="detail-value">${formatDateLong(data.tKembali)}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Keterangan:</div>
+                <div class="detail-value">${data.ket || '-'}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Status:</div>
+                <div class="detail-value"><span class="status status-${getStatusClass(data.s)}">${statusText}</span></div>
+            </div>
+            ${data.asisten ? `
+            <div class="detail-row">
+                <div class="detail-label">Asisten Penanggung Jawab:</div>
+                <div class="detail-value">
+                    <strong>${data.asisten}</strong>
+                    ${data.tanggalPersetujuan ? ` (${formatDateLong(data.tanggalPersetujuan)})` : ''}
+                </div>
+            </div>
+            ` : ''}
+            ${data.s === 'Disetujui' ? `
+            <div class="detail-row">
+                <div class="detail-label">Aksi:</div>
+                <div class="detail-value">
+                    <button class="btn-action btn-dikembalikan" onclick="updateStatus('${id}', 'Selesai')" style="padding: 8px 16px;">
+                        📦 Tandai Sudah Dikembalikan
+                    </button>
+                </div>
+            </div>
+            ` : ''}
+            <div class="detail-row">
+                <div class="detail-label">Tanggal Pengajuan:</div>
+                <div class="detail-value">${formatDateLong(data.t)}</div>
+            </div>
+            <div class="detail-row" style="flex-direction: column; align-items: stretch;">
+                <div class="detail-label">Alat yang Dipinjam:</div>
+                <div class="detail-value">${alatHTML}</div>
+            </div>
+        `;
+        
+        modalDetail.style.display = 'flex';
+    }
+
+    // ========== EVENT LISTENERS ==========
+    filterStatus.addEventListener('change', loadPeminjamanData);
+    searchInput.addEventListener('input', loadPeminjamanData);
+    btnRefresh.addEventListener('click', loadPeminjamanData);
+
+    // Event delegation untuk tombol aksi di tabel
+    tbodyPeminjaman.addEventListener('click', function(e) {
+        const target = e.target;
+        const id = target.getAttribute('data-id');
+        
+        if (target.classList.contains('btn-detail')) {
+            showDetailModal(id);
+        } else if (target.classList.contains('btn-setuju')) {
+            showAsistenPopup(id, 'setuju');
+        } else if (target.classList.contains('btn-tolak')) {
+            showAsistenPopup(id, 'tolak');
+        } else if (target.classList.contains('btn-dikembalikan')) {
+            if (confirm('Apakah alat sudah dikembalikan? Status akan diubah menjadi Selesai.')) {
+                updateStatus(id, 'Selesai');
+            }
+        }
+    });
+
+    // Tutup modal
+    closeModal.addEventListener('click', function() {
+        modalDetail.style.display = 'none';
+        currentModalData = null;
+    });
+
+    window.addEventListener('click', function(e) {
+        if (e.target === modalDetail) {
+            modalDetail.style.display = 'none';
+            currentModalData = null;
+        }
+    });
+
+    // ========== INISIALISASI ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        loadPeminjamanData();
+        
+        // Auto-refresh setiap 30 detik
+        setInterval(loadPeminjamanData, 30000);
+        
+        // Tampilkan notifikasi selamat datang
+        setTimeout(() => {
+            showNotification('Panel Asisten siap! Data akan diperbarui otomatis.', 'success');
+        }, 1000);
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl + R untuk refresh
+        if (e.ctrlKey && e.key === 'r') {
+            e.preventDefault();
+            loadPeminjamanData();
+        }
+        // Escape untuk tutup modal
+        if (e.key === 'Escape') {
+            modalDetail.style.display = 'none';
+            currentModalData = null;
+            closeAsistenPopup();
+        }
+    });
+  </script>
+</body>
+</html>

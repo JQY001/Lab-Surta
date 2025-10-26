@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Laboratorium Surta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff6600, #ff8c42);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo img {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: contain;
+        }
+
+        .logo h1 {
+            color: #ff6600;
+            font-size: 24px;
+            margin-top: 10px;
+        }
+
+        .logo span {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .login-form h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            color: #666;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .role-btn.active {
+            border-color: #ff6600;
+            background: #fff3e6;
+            color: #ff6600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff6600;
+            box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            background: #ff6600;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-login:hover {
+            background: #e55a00;
+            transform: translateY(-2px);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border: 1px solid #fcc;
+            display: none;
+        }
+
+        .role-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #666;
+            border-left: 4px solid #ff6600;
+            text-align: left;
+        }
+
+        .role-info strong {
+            color: #ff6600;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+
+            .back-button {
+                top: 15px;
+                left: 15px;
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .role-selector {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .back-button {
+                top: 10px;
+                left: 10px;
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            
+            .back-button span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tombol Kembali di Pojok Kiri Atas -->
+    <button class="back-button" onclick="goBack()">
+        <span>←</span>
+        <span>Kembali</span>
+    </button>
+
+    <div class="login-container">
+        <div class="logo">
+            <img src="IMG/logoitenas.png" alt="Logo Lab Surta">
+            <h1>Laboratorium Surta</h1>
+            <span>Teknik Geodesi - Login System</span>
+        </div>
+
+        <div class="login-form">
+            <h2>Login ke Sistem</h2>
+            
+            <div class="role-selector">
+                <button type="button" class="role-btn active" data-role="asisten">
+                    👨‍💼 Asisten Lab
+                </button>
+                <button type="button" class="role-btn" data-role="admin">
+                    🔧 Administrator
+                </button>
+            </div>
+            
+            <div id="errorMessage" class="error-message">
+                Username atau password salah!
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Masukkan username" 
+                        required
+                        autocomplete="username"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Masukkan password" 
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <span class="loading" id="loadingSpinner" style="display: none;"></span>
+                    <span id="loginText">Masuk sebagai Asisten</span>
+                </button>
+            </form>
+
+            
+        </div>
+    </div>
+
+    <script>
+        // Fungsi hash SHA-256 untuk admin
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        // Kredensial - admin pakai hash, asisten pakai plain text
+        const CREDENTIALS = {
+            admin: {
+                usernameHash: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", // admin
+                passwordHash: "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9", // admin123
+                redirect: "admin-persetujuan.html"
+            },
+            asisten: {
+                username: "asisten",
+                password: "asisten123",
+                redirect: "asisten-persetujuan.html"
+            }
+        };
+
+        // Elemen DOM
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMessage = document.getElementById('errorMessage');
+        const loginBtn = document.getElementById('loginBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const loginText = document.getElementById('loginText');
+        const roleInfo = document.getElementById('roleInfo');
+        const roleButtons = document.querySelectorAll('.role-btn');
+
+        let currentRole = 'asisten';
+
+        // Fungsi untuk mengubah role
+        function changeRole(role) {
+            currentRole = role;
+            
+            // Update tombol aktif
+            roleButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.role === role);
+            });
+            
+            // Update teks tombol login
+            loginText.textContent = `Masuk sebagai ${role === 'admin' ? 'Administrator' : 'Asisten Lab'}`;
+            
+            // Update info hak akses
+            if (role === 'admin') {
+                roleInfo.innerHTML = `
+                    <strong>🔧 Hak Akses Administrator:</strong><br>
+                    • Akses penuh ke semua fitur<br>
+                    • Dapat mengelola semua data peminjaman<br>
+                    • Dapat menghapus data dan export PDF<br>
+                    • Dapat melihat statistik penyimpanan
+                `;
+            } else {
+                roleInfo.innerHTML = `
+                    <strong>👨‍💼 Hak Akses Asisten Lab:</strong><br>
+                    • Dapat melihat daftar peminjaman<br>
+                    • Dapat menyetujui atau menolak peminjaman<br>
+                    • Dapat menandai alat sudah dikembalikan<br>
+                    • <strong>Tidak dapat</strong> menghapus data atau export PDF
+                `;
+            }
+            
+            // Reset form
+            usernameInput.value = '';
+            passwordInput.value = '';
+            hideError();
+            usernameInput.focus();
+        }
+
+        // Event listener untuk tombol role
+        roleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                changeRole(this.dataset.role);
+            });
+        });
+
+        // Fungsi untuk kembali ke halaman utama (peminjaman alat)
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // Fungsi untuk menampilkan error
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // Fungsi untuk menyembunyikan error
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        // Fungsi untuk menampilkan loading
+        function showLoading() {
+            loadingSpinner.style.display = 'inline-block';
+            loginBtn.disabled = true;
+            loginBtn.style.opacity = '0.7';
+        }
+
+        // Fungsi untuk menyembunyikan loading
+        function hideLoading() {
+            loadingSpinner.style.display = 'none';
+            loginBtn.disabled = false;
+            loginBtn.style.opacity = '1';
+        }
+
+        // Fungsi untuk validasi login - admin pakai hash, asisten pakai plain text
+        async function validateLogin(username, password, role) {
+            if (role === 'admin') {
+                // Admin pakai hash
+                try {
+                    const usernameHash = await sha256(username);
+                    const passwordHash = await sha256(password);
+                    const creds = CREDENTIALS[role];
+                    
+                    return usernameHash === creds.usernameHash && passwordHash === creds.passwordHash;
+                } catch (error) {
+                    console.error('Error validating admin login:', error);
+                    return false;
+                }
+            } else {
+                // Asisten pakai plain text
+                const creds = CREDENTIALS[role];
+                return username === creds.username && password === creds.password;
+            }
+        }
+
+        // Fungsi untuk redirect
+        function redirectToDashboard(role) {
+            localStorage.setItem(`${role}LoggedIn`, 'true');
+            localStorage.setItem('loginTime', new Date().getTime());
+            localStorage.setItem('userRole', role);
+            window.location.href = CREDENTIALS[role].redirect;
+        }
+
+        // Event listener untuk form login
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            // Validasi input
+            if (!username || !password) {
+                showError('Username dan password harus diisi!');
+                return;
+            }
+
+            // Tampilkan loading
+            showLoading();
+            hideError();
+
+            try {
+                // Validasi login
+                const isValid = await validateLogin(username, password, currentRole);
+                
+                if (isValid) {
+                    // Login berhasil
+                    setTimeout(() => {
+                        redirectToDashboard(currentRole);
+                    }, 500);
+                } else {
+                    // Login gagal
+                    showError('Username atau password salah!');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            } catch (error) {
+                showError('Terjadi kesalahan sistem. Silakan coba lagi.');
+                console.error('Login error:', error);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Event listener untuk input field
+        usernameInput.addEventListener('input', hideError);
+        passwordInput.addEventListener('input', hideError);
+
+        // Auto-focus pada username field saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            usernameInput.focus();
+            
+            // Clear semua status login saat halaman login dimuat
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('asistenLoggedIn');
+            localStorage.removeItem('userRole');
+            
+            // Debug info
+            console.log('Login system loaded - HYBRID VERSION');
+            console.log('Admin uses hash, Asisten uses plain text');
+        });
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                loginForm.dispatchEvent(new Event('submit'));
+            }
+            if (e.key === 'Escape') {
+                goBack();
+            }
+        });
+
+        // Clear form data saat halaman dimuat
+        window.addEventListener('pageshow', function() {
+            usernameInput.value = '';
+            passwordInput.value = '';
+            hideError();
+        });
+    </script>
+</body>
+</html>

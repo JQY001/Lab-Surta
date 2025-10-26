@@ -131,6 +131,47 @@
       border-bottom: 2px solid #fff;
     }
 
+    /* TOMBOL TAHUN - TANPA LATAR BELAKANG PUTIH */
+    .year-navigation {
+      padding: 20px 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      background-color: transparent; /* Menghapus latar belakang putih */
+    }
+
+    .year-navigation a {
+      background-color: #ff6600;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 10px rgba(255, 102, 0, 0.3);
+      user-select: none;
+      text-decoration: none;
+      text-align: center;
+      display: inline-block;
+      min-width: 90px;
+    }
+
+    .year-navigation a:hover {
+      background-color: #cc5200;
+      transform: translateY(-2px);
+    }
+
+    .year-navigation a.active {
+      background-color: #cc5200;
+      box-shadow: 0 2px 5px rgba(255, 102, 0, 0.5);
+      transform: translateY(0);
+      border: 2px solid #fff;
+    }
+
     /* MAIN */
     main {
       max-width: 1100px;
@@ -352,6 +393,17 @@
         transform: rotate(-45deg) translate(7px, -6px);
       }
 
+      /* Responsive untuk tombol tahun */
+      .year-navigation {
+        padding: 15px 20px;
+        gap: 10px;
+      }
+      .year-navigation a {
+        padding: 10px 20px;
+        font-size: 1rem;
+        min-width: 80px;
+      }
+
       /* --- PERBAIKAN UNTUK SPASI KOTAK FOTO DAN DESKRIPSI --- */
       .content-wrapper {
         flex-direction: column;
@@ -387,7 +439,7 @@
     <div class="logo">
       <img src="IMG/logoitenas.png" alt="Logo Lab Surta" />
       <div class="text-logo">
-        <h1>Laboratorium Surta</h1>
+        <h1>Laboratorium Survei dan Pemetaan</h1>
         <span>Teknik Geodesi</span>
       </div>
     </div>
@@ -409,6 +461,12 @@
     </nav>
   </header>
 
+  <!-- Tombol navigasi tahun - TANPA LATAR BELAKANG PUTIH -->
+  <div class="year-navigation">
+    <a href="kemah-geospasial-2024.html">2024</a>
+    <a href="kemah-geospasial.html" class="active">2025</a>
+  </div>
+
   <main>
     <!-- Langsung tampil konten 2025 tanpa tombol -->
     <div id="content-2025" class="year-content active">
@@ -428,7 +486,7 @@
         <div class="right-side">
           <h2>Kemah Geospasial</h2>
           <p>
-            Kegiatan kemah geospasial merupakan kegiatan lapangan yang bertujuan untuk mengaplikasikan ilmu geodesi dan pemetaan secara praktis di lapangan. Peserta akan belajar teknik survei, pengolahan data, dan pemanfaatan teknologi geospasial. Selain itu, kegiatan ini juga melatih kerja sama, tanggung jawab, dan kepedulian terhadap masyarakat. 
+            Kegiatan kemah geospasial tahun 2024 merupakan kegiatan lapangan yang bertujuan untuk mengaplikasikan ilmu geodesi dan pemetaan secara praktis di lapangan. Peserta akan belajar teknik survei, pengolahan data, dan pemanfaatan teknologi geospasial. Selain itu, kegiatan ini juga melatih kerja sama, tanggung jawab, dan kepedulian terhadap masyarakat. 
           </p>
         </div>
       </div>
@@ -491,7 +549,7 @@
   </main>
 
   <footer style="background:#ff6600; color:#333; text-align:center; padding:18px 20px; font-size:13px;">
-    © 2025 Lab Surta - Teknik Geodesi
+    © 2025 Lab Survei dan Pemetaan - Teknik Geodesi
   </footer>
 
   <script>
@@ -585,4 +643,3 @@
   </script>
 </body>
 </html>
-

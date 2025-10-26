@@ -42,7 +42,7 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      z-index: 1001; /* Pastikan logo di atas menu saat terbuka */
+      z-index: 1001;
     }
     header .logo img {
       width: 48px;
@@ -66,7 +66,7 @@
 
     /* HAMBURGER MENU ICON - Hanya tampil di mobile */
     .hamburger {
-      display: none; /* Sembunyikan secara default */
+      display: none;
       flex-direction: column;
       justify-content: space-around;
       width: 30px;
@@ -75,7 +75,7 @@
       border: none;
       cursor: pointer;
       padding: 0;
-      z-index: 1001; /* Pastikan ikon di atas menu saat terbuka */
+      z-index: 1001;
     }
 
     .hamburger span {
@@ -154,7 +154,7 @@
       gap: 24px;
     }
 
-    /* Input Umum (text, number, date, select, textarea) */
+    /* Input Umum */
     select, input[type="text"], input[type="number"], textarea, input[type="date"] {
       width: 100%;
       padding: 10px 14px;
@@ -308,15 +308,15 @@
       background-color: #ff6600;
     }
 
-    /* Tombol Print dan Reset */
+    /* Tombol Kirim dan Reset */
     .btn-group {
       margin: 30px auto 0;
       display: flex;
       justify-content: center;
       gap: 20px;
     }
-    button#btnPrint, button#btnReset {
-      background-color: #007bff;
+    button#btnKirim, button#btnReset {
+      background-color:#ff6600;
       color: white;
       border: none;
       padding: 12px 30px;
@@ -328,9 +328,105 @@
       transition: background-color 0.3s ease, transform 0.2s ease;
       user-select: none;
     }
-    button#btnPrint:hover, button#btnReset:hover {
-      background-color: #0056b3;
+    button#btnKirim:hover, button#btnReset:hover {
+      background-color: #cc5200;
       transform: translateY(-2px);
+    }
+
+    /* Notifikasi Pop-up Tengah */
+    .popup-notification {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .popup-notification.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .popup-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    
+    .popup-notification.show .popup-content {
+      transform: scale(1);
+    }
+    
+    .popup-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+    
+    .popup-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #28a745;
+    }
+    
+    .popup-message {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    
+    .popup-countdown {
+      font-size: 1rem;
+      color: #666;
+      margin-top: 15px;
+    }
+    
+    .countdown-number {
+      font-weight: 700;
+      color: #ff6600;
+    }
+
+    /* Notifikasi Samping */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      z-index: 2000;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+    }
+    .notification.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .notification.success {
+      background-color: #28a745;
+    }
+    .notification.error {
+      background-color: #dc3545;
+    }
+    .notification.warning {
+      background-color: #ffc107;
+      color: #212529;
     }
 
     /* FOOTER */
@@ -351,40 +447,37 @@
         padding: 15px 20px;
       }
 
-      /* Tampilkan hamburger menu */
       .hamburger {
         display: flex;
       }
 
-      /* Sembunyikan navigasi default */
       nav {
         position: fixed;
-        top: 70px; /* Tinggi header */
+        top: 70px;
         left: 0;
         width: 100%;
-        height: 0; /* Awalnya tersembunyi */
+        height: 0;
         background-color: #ff6600;
         overflow: hidden;
         transition: height 0.4s ease;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        z-index: 999; /* Di bawah logo dan hamburger */
+        z-index: 999;
       }
 
-      /* Tampilkan navigasi saat menu aktif */
       nav.active {
-        height: calc(100vh - 70px); /* Set tinggi penuh layar dikurangi header */
+        height: calc(100vh - 70px);
       }
 
       nav ul {
         flex-direction: column;
         gap: 0;
         padding: 20px;
-        opacity: 0; /* Sembunyikan item menu saat transisi tinggi */
-        transition: opacity 0.3s ease 0.1s; /* Animasi opacity setelah tinggi berubah */
+        opacity: 0;
+        transition: opacity 0.3s ease 0.1s;
       }
 
       nav.active ul {
-        opacity: 1; /* Tampilkan item menu saat aktif */
+        opacity: 1;
       }
 
       nav ul li {
@@ -404,10 +497,9 @@
       }
 
       nav ul li a::after {
-        display: none; /* Sembunyikan efek garis bawah di mobile */
+        display: none;
       }
 
-      /* Animasi hamburger menjadi X */
       .hamburger.active span:nth-child(1) {
         transform: rotate(45deg) translate(5px, 5px);
       }
@@ -429,6 +521,15 @@
       }
       main {
         margin: 30px auto 40px;
+      }
+      .input-row {
+        flex-direction: column;
+      }
+      .input-row > * {
+        width: 100%;
+      }
+      input[type="number"] {
+        max-width: 100%;
       }
     }
 
@@ -491,9 +592,22 @@
   </style>
 </head>
 <body>
+  <!-- Notifikasi Pop-up Tengah -->
+  <div id="popupNotification" class="popup-notification">
+    <div class="popup-content">
+      <div class="popup-icon">✅</div>
+      <div class="popup-title">Permintaan Berhasil!</div>
+      <div class="popup-message">Terima kasih! Segera hubungi penjaga lab.</div>
+      <div class="popup-countdown">Halaman akan otomatis diperbarui dalam <span id="countdownNumber" class="countdown-number">5</span> detik</div>
+    </div>
+  </div>
+
+  <!-- Notifikasi Samping -->
+  <div id="notification" class="notification"></div>
+
   <header>
     <div class="logo">
-      <img src="./logoitenas.png" alt="Logo Lab Surta" />
+      <img src="IMG/logoitenas.png" alt="Logo Lab Surta" />
       <div class="text-logo">
         <h1>Laboratorium Surta</h1>
         <span>Teknik Geodesi</span>
@@ -513,6 +627,7 @@
         <li><a href="pratikum.html">Praktikum</a></li>
         <li><a href="alat.html">Alat</a></li>
         <li><a href="daftarasisten.html">Daftar Asisten</a></li>
+        <li><a href="admin-persetujuan.html">Admin</a></li>
       </ul>
     </nav>
   </header>
@@ -590,7 +705,7 @@
     </div>
 
     <div class="btn-group">
-      <button type="button" id="btnPrint">Cetak Formulir</button>
+      <button type="button" id="btnKirim">Kirim Permintaan</button>
       <button type="button" id="btnReset">Reset Formulir</button>
     </div>
   </main>
@@ -600,6 +715,7 @@
   </footer>
 
   <script>
+    // ========== ELEMEN DOM ==========
     const selectAlat = document.getElementById('selectAlat');
     const inputAlatLain = document.getElementById('inputAlatLain');
     const inputJumlah = document.getElementById('inputJumlah');
@@ -609,7 +725,7 @@
 
     const serialNumberSection = document.getElementById('serialNumberSection');
     const serialAlatNama = document.getElementById('serialAlatNama');
-    const serialAlatJumlah = document.getElementById('serialAlatJumlah'); // Tambahkan ini
+    const serialAlatJumlah = document.getElementById('serialAlatJumlah');
     const serialNumberInputsContainer = document.getElementById('serialNumberInputs');
 
     const namaPeminjamInput = document.getElementById('namaPeminjam');
@@ -617,12 +733,62 @@
     const tanggalPinjamInput = document.getElementById('tanggalPinjam');
     const tanggalKembaliInput = document.getElementById('tanggalKembali');
     const keteranganInput = document.getElementById('keterangan');
-    const btnPrint = document.getElementById('btnPrint');
+    const btnKirim = document.getElementById('btnKirim');
     const btnReset = document.getElementById('btnReset');
+    const notification = document.getElementById('notification');
+    const popupNotification = document.getElementById('popupNotification');
+    const countdownNumber = document.getElementById('countdownNumber');
 
-    // Daftar alat yang memerlukan nomor seri
+    // ========== KONSTANTA ==========
     const ALAT_DENGAN_NOMOR_SERI = ['Total Station', 'Waterpass'];
 
+    // ========== FUNGSI UTILITAS ==========
+    function showNotification(message, type = 'success') {
+      notification.textContent = message;
+      notification.className = `notification ${type} show`;
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 4000);
+    }
+
+    function showPopupNotification() {
+      popupNotification.classList.add('show');
+      
+      let countdown = 5;
+      countdownNumber.textContent = countdown;
+      
+      const countdownInterval = setInterval(() => {
+        countdown--;
+        countdownNumber.textContent = countdown;
+        
+        if (countdown <= 0) {
+          clearInterval(countdownInterval);
+          popupNotification.classList.remove('show');
+          // Reset form dan refresh halaman
+          setTimeout(() => {
+            btnReset.click();
+          }, 300);
+        }
+      }, 1000);
+    }
+
+    function formatDate(date) {
+      return new Date(date).toLocaleDateString('id-ID', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+
+    // ========== INISIALISASI FORM ==========
+    // Set tanggal minimal untuk input tanggal (hari ini)
+    const today = new Date().toISOString().split('T')[0];
+    tanggalPinjamInput.min = today;
+    tanggalKembaliInput.min = today;
+
+    // ========== EVENT LISTENERS ==========
     // Fungsi untuk menampilkan/menyembunyikan input alat lain
     selectAlat.addEventListener('change', () => {
       if (selectAlat.value === 'Lainnya') {
@@ -632,12 +798,11 @@
         inputAlatLain.value = '';
         inputAlatLain.disabled = true;
       }
-      // Sembunyikan bagian nomor seri saat pilihan alat berubah
       serialNumberSection.style.display = 'none';
-      serialNumberInputsContainer.innerHTML = ''; // Bersihkan input nomor seri
+      serialNumberInputsContainer.innerHTML = '';
     });
 
-    // Fungsi untuk menampilkan input nomor seri saat jumlah atau alat berubah
+    // Fungsi untuk menampilkan input nomor seri
     function toggleSerialNumberInputs() {
       let namaAlat = selectAlat.value;
       if (namaAlat === 'Lainnya') {
@@ -650,7 +815,7 @@
         serialNumberSection.style.display = 'block';
         serialAlatNama.textContent = namaAlat;
         serialAlatJumlah.textContent = jumlah;
-        serialNumberInputsContainer.innerHTML = ''; // Bersihkan input sebelumnya
+        serialNumberInputsContainer.innerHTML = '';
 
         for (let i = 0; i < jumlah; i++) {
           const input = document.createElement('input');
@@ -658,7 +823,7 @@
           input.classList.add('serial-number-input');
           input.placeholder = `Nomor Seri Unit ${i + 1}`;
           input.setAttribute('aria-label', `Nomor Seri Unit ${i + 1} untuk ${namaAlat}`);
-          input.required = true; // Nomor seri wajib diisi
+          input.required = true;
           serialNumberInputsContainer.appendChild(input);
         }
       } else {
@@ -669,40 +834,52 @@
 
     inputJumlah.addEventListener('change', toggleSerialNumberInputs);
     selectAlat.addEventListener('change', toggleSerialNumberInputs);
-    inputAlatLain.addEventListener('input', toggleSerialNumberInputs); // Jika alat lain diisi dan itu adalah alat berseri
+    inputAlatLain.addEventListener('input', toggleSerialNumberInputs);
 
+    // Validasi tanggal pengembalian harus setelah tanggal peminjaman
+    tanggalPinjamInput.addEventListener('change', function() {
+      if (this.value) {
+        tanggalKembaliInput.min = this.value;
+        if (tanggalKembaliInput.value && tanggalKembaliInput.value < this.value) {
+          tanggalKembaliInput.value = this.value;
+          showNotification('Tanggal pengembalian disesuaikan dengan tanggal peminjaman', 'warning');
+        }
+      }
+    });
+
+    // ========== FUNGSI TAMBAH ALAT ==========
     btnTambah.addEventListener('click', () => {
       const namaPeminjam = namaPeminjamInput.value.trim();
       const nrpPeminjam = nrpPeminjamInput.value.trim();
 
       if (!namaPeminjam) {
-        alert('Nama Peminjam harus diisi.');
+        showNotification('Nama Peminjam harus diisi.', 'error');
         namaPeminjamInput.focus();
         return;
       }
       if (!nrpPeminjam) {
-        alert('NRP Peminjam harus diisi.');
+        showNotification('NRP Peminjam harus diisi.', 'error');
         nrpPeminjamInput.focus();
         return;
       }
 
       let namaAlat = selectAlat.value;
       if (!namaAlat) {
-        alert('Silakan pilih alat atau ketik nama alat lain.');
+        showNotification('Silakan pilih alat atau ketik nama alat lain.', 'error');
         selectAlat.focus();
         return;
       }
       if (namaAlat === 'Lainnya') {
         namaAlat = inputAlatLain.value.trim();
         if (!namaAlat) {
-          alert('Silakan ketik nama alat yang ingin dipinjam.');
+          showNotification('Silakan ketik nama alat yang ingin dipinjam.', 'error');
           inputAlatLain.focus();
           return;
         }
       }
       let jumlah = parseInt(inputJumlah.value);
       if (isNaN(jumlah) || jumlah < 1) {
-        alert('Jumlah alat harus minimal 1.');
+        showNotification('Jumlah alat harus minimal 1.', 'error');
         inputJumlah.focus();
         return;
       }
@@ -711,7 +888,7 @@
       if (ALAT_DENGAN_NOMOR_SERI.includes(namaAlat)) {
         const snInputs = serialNumberInputsContainer.querySelectorAll('.serial-number-input');
         if (snInputs.length !== jumlah) {
-            alert('Jumlah input nomor seri tidak sesuai dengan jumlah alat.');
+            showNotification('Jumlah input nomor seri tidak sesuai dengan jumlah alat.', 'error');
             return;
         }
         let hasEmptySN = false;
@@ -724,21 +901,16 @@
         });
 
         if (hasEmptySN) {
-            alert('Semua nomor seri harus diisi.');
+            showNotification('Masukan nomor seri alat.', 'error');
             return;
         }
 
-        // Validasi nomor seri unik (opsional, tapi sangat disarankan)
         const uniqueSerialNumbers = new Set(serialNumbers);
         if (uniqueSerialNumbers.size !== serialNumbers.length) {
-            alert('Nomor seri tidak boleh ada yang sama. Mohon periksa kembali.');
+            showNotification('Nomor seri tidak boleh ada yang sama. Mohon periksa kembali.', 'error');
             return;
         }
       }
-
-      // Untuk alat dengan nomor seri, setiap nomor seri dianggap unit terpisah,
-      // tapi di tabel kita gabungkan nomor serinya dalam satu sel, dipisah koma.
-      // Untuk alat tanpa nomor seri, jumlah bisa digabungkan jika nama alat sama.
 
       let found = false;
       if (!ALAT_DENGAN_NOMOR_SERI.includes(namaAlat)) {
@@ -750,12 +922,12 @@
                   let currentJumlah = parseInt(cellJumlah.textContent);
                   cellJumlah.textContent = currentJumlah + jumlah;
                   found = true;
+                  showNotification(`Jumlah ${namaAlat} diperbarui menjadi ${currentJumlah + jumlah} unit`, 'success');
               }
           });
       }
 
       if (!found) {
-        // Hapus row kosong jika ada
         if (kosongRow) kosongRow.style.display = 'none';
 
         const tr = document.createElement('tr');
@@ -781,6 +953,7 @@
           if (tabelPeminjaman.querySelectorAll('tr:not(#kosongRow)').length === 0) {
             kosongRow.style.display = '';
           }
+          showNotification(`${namaAlat} dihapus dari daftar`, 'warning');
         });
         tdAksi.appendChild(btnHapus);
 
@@ -789,6 +962,8 @@
         tr.appendChild(tdSerial);
         tr.appendChild(tdAksi);
         tabelPeminjaman.appendChild(tr);
+        
+        showNotification(`${namaAlat} berhasil ditambahkan ke daftar`, 'success');
       }
 
       // Reset input alat
@@ -796,51 +971,121 @@
       inputAlatLain.value = '';
       inputAlatLain.disabled = true;
       inputJumlah.value = 1;
-      serialNumberSection.style.display = 'none'; // Sembunyikan kembali bagian nomor seri
-      serialNumberInputsContainer.innerHTML = ''; // Bersihkan input nomor seri
+      serialNumberSection.style.display = 'none';
+      serialNumberInputsContainer.innerHTML = '';
       selectAlat.focus();
     });
 
-    // Event listener untuk tombol Print
-    btnPrint.addEventListener('click', () => {
-      // Validasi sebelum mencetak
+    // ========== FUNGSI KIRIM PERMINTAAN ==========
+    btnKirim.addEventListener('click', () => {
       const namaPeminjam = namaPeminjamInput.value.trim();
       const nrpPeminjam = nrpPeminjamInput.value.trim();
       const tanggalPinjam = tanggalPinjamInput.value;
       const tanggalKembali = tanggalKembaliInput.value;
+      const keterangan = keteranganInput.value.trim();
       const jumlahAlat = tabelPeminjaman.querySelectorAll('tr:not(#kosongRow)').length;
 
       if (!namaPeminjam) {
-        alert('Nama Peminjam harus diisi sebelum mencetak.');
+        showNotification('Nama Peminjam harus diisi sebelum mengirim permintaan.', 'error');
         namaPeminjamInput.focus();
         return;
       }
       if (!nrpPeminjam) {
-        alert('NRP Peminjam harus diisi sebelum mencetak.');
+        showNotification('NRP Peminjam harus diisi sebelum mengirim permintaan.', 'error');
         nrpPeminjamInput.focus();
         return;
       }
       if (!tanggalPinjam) {
-        alert('Tanggal Peminjaman harus diisi sebelum mencetak.');
+        showNotification('Tanggal Peminjaman harus diisi sebelum mengirim permintaan.', 'error');
         tanggalPinjamInput.focus();
         return;
       }
       if (!tanggalKembali) {
-        alert('Tanggal Pengembalian harus diisi sebelum mencetak.');
+        showNotification('Tanggal Pengembalian harus diisi sebelum mengirim permintaan.', 'error');
         tanggalKembaliInput.focus();
         return;
       }
       if (jumlahAlat === 0) {
-        alert('Minimal 1 alat harus dipinjam sebelum mencetak.');
+        showNotification('Minimal 1 alat harus dipinjam sebelum mengirim permintaan.', 'error');
         selectAlat.focus();
         return;
       }
 
-      // Jika semua valid, cetak formulir
-      window.print();
+      // Kumpulkan data alat yang dipinjam
+      const alatDipinjam = [];
+      const rows = tabelPeminjaman.querySelectorAll('tr:not(#kosongRow)');
+      rows.forEach(row => {
+        const namaAlat = row.querySelector('td:first-child').textContent;
+        const jumlah = row.querySelector('td:nth-child(2)').textContent;
+        const nomorSeri = row.querySelector('td:nth-child(3)').textContent;
+        
+        alatDipinjam.push({
+          nama: namaAlat,
+          jumlah: parseInt(jumlah),
+          nomorSeri: nomorSeri
+        });
+      });
+
+      // Buat objek data peminjaman (format ringkas)
+      const dataPeminjaman = {
+        n: namaPeminjam,
+        nrp: nrpPeminjam,
+        tPinjam: tanggalPinjam,
+        tKembali: tanggalKembali,
+        ket: keterangan,
+        alat: alatDipinjam,
+        s: 'Menunggu',
+        t: new Date().toISOString().split('T')[0]
+      };
+
+      // Simpan ke localStorage dengan error handling
+      try {
+        const idPeminjaman = 'p_' + Date.now();
+        localStorage.setItem(idPeminjaman, JSON.stringify(dataPeminjaman));
+        
+        let daftarPeminjaman = JSON.parse(localStorage.getItem('daftar') || '[]');
+        daftarPeminjaman.push(idPeminjaman);
+        localStorage.setItem('daftar', JSON.stringify(daftarPeminjaman));
+
+        // Tampilkan popup notifikasi di tengah
+        showPopupNotification();
+        
+      } catch (e) {
+        if (e.name === 'QuotaExceededError') {
+          showNotification('Penyimpanan penuh! Data lama akan dihapus otomatis.', 'warning');
+          // Otomatis hapus data tertua dan coba lagi
+          setTimeout(() => {
+            hapusDataTertua();
+            // Coba simpan lagi
+            try {
+              const idPeminjaman = 'p_' + Date.now();
+              localStorage.setItem(idPeminjaman, JSON.stringify(dataPeminjaman));
+              let daftarPeminjaman = JSON.parse(localStorage.getItem('daftar') || '[]');
+              daftarPeminjaman.push(idPeminjaman);
+              localStorage.setItem('daftar', JSON.stringify(daftarPeminjaman));
+              // Tampilkan popup notifikasi di tengah
+              showPopupNotification();
+            } catch (e2) {
+              showNotification('❌ Gagal menyimpan. Storage penuh! Hubungi admin.', 'error');
+            }
+          }, 1000);
+        } else {
+          showNotification('❌ Terjadi kesalahan saat menyimpan data.', 'error');
+        }
+      }
     });
 
-    // Event listener untuk tombol Reset
+    // Fungsi bantu untuk hapus data tertua
+    function hapusDataTertua() {
+      const daftarPeminjaman = JSON.parse(localStorage.getItem('daftar') || '[]');
+      if (daftarPeminjaman.length > 0) {
+        const idTertua = daftarPeminjaman.shift();
+        localStorage.removeItem(idTertua);
+        localStorage.setItem('daftar', JSON.stringify(daftarPeminjaman));
+      }
+    }
+
+    // ========== FUNGSI RESET FORM ==========
     btnReset.addEventListener('click', () => {
       if (confirm('Apakah Anda yakin ingin mereset semua isian formulir? Data yang sudah diisi akan hilang.')) {
         // Reset input form
@@ -868,20 +1113,17 @@
         // Set focus ke input pertama
         namaPeminjamInput.focus();
         
-        alert('Formulir berhasil direset.');
+        showNotification('Formulir berhasil direset', 'success');
       }
     });
 
-    // HAMBURGER MENU FUNCTIONALITY
+    // ========== HAMBURGER MENU FUNCTIONALITY ==========
     const hamburgerMenu = document.getElementById('hamburgerMenu');
     const mainNav = document.getElementById('mainNav');
 
     hamburgerMenu.addEventListener('click', function() {
-      // Toggle class active pada hamburger dan nav
       this.classList.toggle('active');
       mainNav.classList.toggle('active');
-      
-      // Mencegah scroll body saat menu terbuka
       document.body.style.overflow = mainNav.classList.contains('active') ? 'hidden' : '';
     });
 
@@ -897,11 +1139,10 @@
       }
     });
 
-    // Tutup menu saat link di dalam menu diklik (untuk navigasi single page)
+    // Tutup menu saat link di dalam menu diklik
     const navLinks = document.querySelectorAll('nav a');
     navLinks.forEach(link => {
       link.addEventListener('click', function() {
-        // Hanya tutup jika menu sedang aktif
         if (mainNav.classList.contains('active')) {
           hamburgerMenu.classList.remove('active');
           mainNav.classList.remove('active');
@@ -918,6 +1159,18 @@
         document.body.style.overflow = '';
       }
     });
+
+    // ========== INISIALISASI TAMBAHAN ==========
+    // Auto-focus ke nama peminjam saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+      namaPeminjamInput.focus();
+      
+      // Tampilkan notifikasi selamat datang
+      setTimeout(() => {
+        showNotification('Selamat datang! Silakan isi form peminjaman alat.', 'success');
+      }, 1000);
+    });
+
   </script>
 </body>
 </html>
